@@ -1,0 +1,17 @@
+{
+  "name": "@cwl-botd/bot-detection",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "exports": {
+    ".": {
+      "import": "./src/index.ts"
+    }
+  },
+  "scripts": {},
+  "dependencies": {},
+  "devDependencies": {
+    "@cwl-botd/eslint-config": "workspace:*",
+    "@cwl-botd/typescript-config": "workspace:*"
+  }
+}
