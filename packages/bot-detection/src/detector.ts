@@ -1,5 +1,6 @@
 import { collect, detect } from './api'
-import { ComponentDict, DetectionDict } from './types'
+import { collectors } from './collectors'
+import { CollectorDict, DetectionDict } from './types'
 
 /**
  * Class representing a bot detector.
@@ -8,7 +9,7 @@ import { ComponentDict, DetectionDict } from './types'
  * @implements {BotDetectorInterface}
  */
 export default class BotDetector {
-  protected components: ComponentDict | undefined = undefined
+  protected components: CollectorDict | undefined = undefined
   protected detections: DetectionDict | undefined = undefined
 
   public detect() {
@@ -20,6 +21,7 @@ export default class BotDetector {
   }
 
   public async collect() {
-    this.components = await collect()
+    this.components = await collect(collectors)
+    return this.components
   }
 }
