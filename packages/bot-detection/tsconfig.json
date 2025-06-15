@@ -1,12 +1,10 @@
 {
-  "extends": "@cwl-botd/typescript-config/nextjs.json",
+  "extends": "@cwl-botd/typescript-config/base.json",
   "compilerOptions": {
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ]
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "typeRoots": ["./src/types", "./node_modules/@types"]
   },
-  "include": ["**/*.ts", "**/*.tsx", "next-env.d.ts", "next.config.js", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/types/**/*.d.ts"],
+  "exclude": ["node_modules", "dist"]
 }
