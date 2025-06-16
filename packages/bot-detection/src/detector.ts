@@ -1,6 +1,6 @@
-import { collect, detect } from './api'
-import { collectors } from './collectors'
-import { CollectorDict, DetectionDict } from './types'
+import { collect, detect } from './api';
+import { collectors } from './collectors';
+import { CollectorDict, DetectionDict } from './types';
 
 /**
  * Class representing a bot detector.
@@ -9,19 +9,27 @@ import { CollectorDict, DetectionDict } from './types'
  * @implements {BotDetectorInterface}
  */
 export default class BotDetector {
-  protected components: CollectorDict | undefined = undefined
-  protected detections: DetectionDict | undefined = undefined
+  private collections: CollectorDict | undefined = undefined;
+  private detections: DetectionDict | undefined = undefined;
 
   public detect() {
-    if (this.components === undefined) {
-      throw new Error('BotDetector.detect must be called after BotDetector.collect')
+    if (this.collections === undefined) {
+      throw new Error('BotDetector.detect must be called after BotDetector.collect');
     }
 
-    this.detections = detect()
+    this.detections = detect();
   }
 
   public async collect() {
-    this.components = await collect(collectors)
-    return this.components
+    this.collections = await collect(collectors);
+    return this.collections;
+  }
+
+  public getCollections() {
+    return this.collections;
+  }
+
+  public getDetections() {
+    return this.detections;
   }
 }
