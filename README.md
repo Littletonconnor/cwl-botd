@@ -2,22 +2,36 @@
 
 3. **Implement basic browser fingerprinting** - userAgent, platform, language detection
 
-- FINISHED: userAgent
-- FINISHED: platform
+- FINISHED
 
 4. **Add simple automation tool detection** - Check for navigator.webdriver flag
+
+- FINISHED
+
 5. **Create basic detection result structure** - Define bot classification interface
+
+- FINISHED
+
 6. **Build simple API interface** - Basic load() and detect() functions
+
+- FINISHED
 
 ## Phase 2: Core Detection (Medium Priority)
 
 7. **Add basic unit tests** - Test coverage for core functions
 8. **Implement Canvas fingerprinting** - Canvas-based bot detection
+
+- FINISHED
+
 9. **Add WebGL renderer fingerprinting** - Graphics-based detection
+
+- FINISHED
+
 10. **Detect headless browser indicators** - Missing plugins, screen dimensions
-11. **Add Puppeteer-specific detection** - window.chrome, DevTools signatures
-12. **Implement Selenium detection** - window.selenium, element attributes
-13. **Add basic scoring system** - Weight suspicious signals
+
+- FINISHED
+
+11. **Add basic scoring system** - Weight suspicious signals
 
 ## Phase 3: Advanced Features (Low Priority)
 
