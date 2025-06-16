@@ -3,5 +3,5 @@
  * @link https://developer.mozilla.org/en-US/docs/Web/API/Navigator/userAgentData
  */
 export function getUserPlatform() {
-  return navigator.userAgentData?.platform
+  return navigator.userAgentData?.platform ?? navigator.platform
 }
