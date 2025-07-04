@@ -31,14 +31,10 @@
 
 - FINISHED
 
-11. **Add basic scoring system** - Weight suspicious signals
-
 ## Phase 3: Advanced Features (Low Priority)
 
 14. **Create consistency checks** - Timezone vs locale matching
 15. **Add debug mode** - Detailed signal logging
 16. **Implement plugin architecture** - Custom detector support
-17. **Create demo page** - Test interface in Next.js app
-18. **Add comprehensive documentation** - Usage examples and guides
 
 Each task is designed to be completable in 30-60 minutes, giving you quick wins and a working library at each step. You can tackle them in order or jump around based on what interests you most!
