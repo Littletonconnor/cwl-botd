@@ -18,7 +18,7 @@ Analysis of the following libraries and approaches informed this plan:
 
 ## Current State
 
-Phase 1 nearly done (CI pending), Phase 2 complete. 12 collectors working. Build pipeline (tsup, ESM+CJS+UMD). Test framework (vitest + jsdom). Behavioral collectors fixed. Core detection engine: DetectorRegistry, 19 automation detectors, tool-specific detectors, 6 browser environment detectors (eval/engine consistency, error stack analysis, native function checks, performance.now precision, clock skew, screen consistency), 5 lie detection detectors (prototype chain, Proxy detection, toString inconsistency, property descriptors, cross-attribute consistency), weighted scoring engine. 89 tests passing. Good monorepo foundation (Turborepo, pnpm, TypeScript strict, ESLint).
+Phase 1 complete (CI deferred to Phase 8), Phase 2 complete. 12 collectors working. Build pipeline (tsup, ESM+CJS+UMD). Test framework (vitest + jsdom). Behavioral collectors fixed. Core detection engine: DetectorRegistry, 19 automation detectors, tool-specific detectors, 6 browser environment detectors (eval/engine consistency, error stack analysis, native function checks, performance.now precision, clock skew, screen consistency), 5 lie detection detectors (prototype chain, Proxy detection, toString inconsistency, property descriptors, cross-attribute consistency), weighted scoring engine. 89 tests passing. Good monorepo foundation (Turborepo, pnpm, TypeScript strict, ESLint).
 
 ---
 
@@ -40,18 +40,14 @@ Phase 1 nearly done (CI pending), Phase 2 complete. 12 collectors working. Build
   - Add `test` task to `turbo.json` pipeline
   - Create test helpers: mock navigator, mock window, mock document
 
-- [ ] **1.3 Add CI/GitHub Actions workflow**
-  - Lint, type-check, test, build on push/PR
-  - Matrix: Node 18, 20, 22
-  - Cache pnpm store and turbo cache
-  - Add status badges to README
-
-- [x] **1.4 Fix existing collector issues**
+- [x] **1.3 Fix existing collector issues**
   - Fix `mouse_behavior.ts`: returns empty array because addEventListener is async but return is sync — refactor to accumulate over time window
   - Fix `click_behavior.ts`: same sync/async issue
   - Fix `scroll_behavior.ts`: same sync/async issue
   - Add cleanup/teardown for event listeners (memory leak prevention)
   - Add SSR safety checks (`typeof window/document !== 'undefined'`)
+
+> **Note:** CI/GitHub Actions moved to Phase 8 — not needed until the library is in solid shape.
 
 ---
 
@@ -364,7 +360,13 @@ Phase 1 nearly done (CI pending), Phase 2 complete. 12 collectors working. Build
 
 > **Priority: HIGH** — Required for npm publish and enterprise adoption.
 
-- [ ] **8.1 Package configuration for npm publish**
+- [ ] **8.1 Add CI/GitHub Actions workflow**
+  - Lint, type-check, test, build on push/PR
+  - Matrix: Node 18, 20, 22
+  - Cache pnpm store and turbo cache
+  - Add status badges to README
+
+- [ ] **8.2 Package configuration for npm publish**
   - Finalize package.json metadata (name, description, keywords, license)
   - Set up semantic versioning with changesets or release-please
   - Configure npm provenance for supply chain security
@@ -372,14 +374,14 @@ Phase 1 nearly done (CI pending), Phase 2 complete. 12 collectors working. Build
   - Add CHANGELOG.md automation
   - Verify tree-shaking works (ESM `sideEffects: false`)
 
-- [ ] **8.2 Bundle optimization**
+- [ ] **8.3 Bundle optimization**
   - Analyze bundle size with size-limit
   - Ensure zero runtime dependencies
   - Code-split detectors for tree-shaking (import only what you need)
   - Add subpath exports: `@cwl-botd/bot-detection/detectors`
   - Verify compatibility: Webpack 4/5, Vite, Rollup, esbuild
 
-- [ ] **8.3 CDN distribution**
+- [ ] **8.4 CDN distribution**
   - UMD bundle for `<script>` tag usage
   - Auto-publish to unpkg and jsdelivr via npm
   - Add CDN usage examples to docs
