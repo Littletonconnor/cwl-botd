@@ -18,7 +18,7 @@ Analysis of the following libraries and approaches informed this plan:
 
 ## Current State
 
-~35% complete. 12 collectors exist (mostly working), but the entire detection engine is empty stubs. Behavioral collectors (mouse, click, scroll) have a sync/async bug — listeners are added but data is returned before events fire. No tests, no scoring engine, no classification output, no build pipeline for the bot-detection package. No npm scripts. Good monorepo foundation (Turborepo, pnpm, TypeScript strict, ESLint).
+~40% complete. 12 collectors exist and working. Build pipeline added (tsup, ESM+CJS+UMD). Behavioral collectors (mouse, click, scroll) fixed — sync/async bug resolved, SSR guards and listener cleanup added. Detection engine is still empty stubs. No tests, no scoring engine, no classification output. Good monorepo foundation (Turborepo, pnpm, TypeScript strict, ESLint).
 
 ---
 
@@ -46,7 +46,7 @@ Analysis of the following libraries and approaches informed this plan:
   - Cache pnpm store and turbo cache
   - Add status badges to README
 
-- [ ] **1.4 Fix existing collector issues**
+- [x] **1.4 Fix existing collector issues**
   - Fix `mouse_behavior.ts`: returns empty array because addEventListener is async but return is sync — refactor to accumulate over time window
   - Fix `click_behavior.ts`: same sync/async issue
   - Fix `scroll_behavior.ts`: same sync/async issue
