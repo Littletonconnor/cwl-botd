@@ -26,7 +26,7 @@ Analysis of the following libraries and approaches informed this plan:
 
 > **Priority: CRITICAL** — Nothing else works without this.
 
-- [ ] **1.1 Add build pipeline to `packages/bot-detection`**
+- [x] **1.1 Add build pipeline to `packages/bot-detection`**
   - Add tsup or rollup config for ESM + CJS + UMD bundles
   - Add `build`, `dev`, `lint`, `check-types` scripts to package.json
   - Configure package.json `exports` map (`main`, `module`, `types`, `browser`)
