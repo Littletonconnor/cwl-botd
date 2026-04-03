@@ -33,7 +33,7 @@ Analysis of the following libraries and approaches informed this plan:
   - Add `files` field to control what gets published to npm
   - Verify turbo pipeline picks up the new build task
 
-- [ ] **1.2 Set up test framework**
+- [x] **1.2 Set up test framework**
   - Install vitest (lightweight, native ESM/TS, fast)
   - Configure `vitest.config.ts` with jsdom environment for browser APIs
   - Add test scripts to bot-detection package.json
