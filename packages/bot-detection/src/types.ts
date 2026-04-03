@@ -1,5 +1,7 @@
 import { collectors } from './collectors'
+import type { BehaviorTrackerOptions } from './behavioral/tracker'
 import type { DetectionResult } from './detectors/types'
+import type { ScoringOptions } from './detectors/scoring'
 
 export const State = {
   Success: 'Success',
@@ -31,7 +33,25 @@ export type CollectorDict<T extends AbstractSourceDict = DefaultCollectorDict> =
   [K in keyof T]: Component<SourceResponse<T[K]>>
 }
 
+export interface LoadOptions {
+  scoring?: ScoringOptions
+  behavior?: BehaviorTrackerOptions
+  monitoring?: boolean
+}
+
+export interface BehaviorResult {
+  bot: boolean
+  score: number
+  reasons: string[]
+  duration: number
+}
+
 export interface BotDetectorInterface {
-  detect(): DetectionResult
+  detect(options?: ScoringOptions): Promise<DetectionResult>
   collect(): Promise<CollectorDict>
+  getBehaviorScore(): BehaviorResult
+  startBehaviorTracking(): void
+  stopBehaviorTracking(): void
+  getFingerprint(): string
+  destroy(): void
 }
