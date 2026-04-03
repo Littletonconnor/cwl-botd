@@ -1,0 +1,9 @@
+{
+  "extends": "@cwl-botd/typescript-config/react-library.json",
+  "compilerOptions": {
+    "module": "esnext",
+    "moduleResolution": "bundler"
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "exclude": ["node_modules", "dist"]
+}

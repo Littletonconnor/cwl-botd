@@ -18,7 +18,7 @@ Analysis of the following libraries and approaches informed this plan:
 
 ## Current State
 
-Phase 1 complete (CI deferred to Phase 8), Phase 2 complete, Phase 3 complete, Phase 4 complete, Phase 5.1 complete, Phase 5.2 complete, Phase 5.3 complete, Phase 5.4 complete. 17 collectors working (added behaviorSnapshot collector). Build pipeline (tsup, ESM+CJS+UMD). Test framework (vitest + jsdom). BehaviorTracker class with circular buffer, time-windowed accumulation, start/stop/reset lifecycle. Core detection engine: DetectorRegistry, 19 automation detectors, tool-specific detectors, 6 browser environment detectors, 5 lie detection detectors, 7 fingerprint/consistency detectors, 4 behavioral detectors (mouse movement, keyboard, scroll, interaction timing), weighted scoring engine. Refined public API: load(), BotDetector class with full lifecycle methods, DetectOptions, createDefaultRegistry for power users, clean type exports. Configuration system with detector/collector enable/disable, privacy mode (disable fingerprinting by technique), performance mode (skip expensive detectors), and combined preset resolution. Debug/telemetry mode with DebugLogger: per-operation timing for collectors/detectors/scoring, structured log entries, DebugReport export via getDebugReport() and exportDebugJSON(). Plugin system: defineDetector(), defineCollector(), definePlugin() helpers, BotDetector.use(plugin) registration, built-in honeypot and cookieless browsing plugins. 228 tests passing. Good monorepo foundation (Turborepo, pnpm, TypeScript strict, ESLint).
+Phase 1 complete (CI deferred to Phase 8), Phase 2 complete, Phase 3 complete, Phase 4 complete, Phase 5 complete. 17 collectors working (added behaviorSnapshot collector). Build pipeline (tsup, ESM+CJS+UMD). Test framework (vitest + jsdom). BehaviorTracker class with circular buffer, time-windowed accumulation, start/stop/reset lifecycle. Core detection engine: DetectorRegistry, 19 automation detectors, tool-specific detectors, 6 browser environment detectors, 5 lie detection detectors, 7 fingerprint/consistency detectors, 4 behavioral detectors (mouse movement, keyboard, scroll, interaction timing), weighted scoring engine. Refined public API: load(), BotDetector class with full lifecycle methods, DetectOptions, createDefaultRegistry for power users, clean type exports. Configuration system with detector/collector enable/disable, privacy mode (disable fingerprinting by technique), performance mode (skip expensive detectors), and combined preset resolution. Debug/telemetry mode with DebugLogger: per-operation timing for collectors/detectors/scoring, structured log entries, DebugReport export via getDebugReport() and exportDebugJSON(). Plugin system: defineDetector(), defineCollector(), definePlugin() helpers, BotDetector.use(plugin) registration, built-in honeypot and cookieless browsing plugins. Framework integration packages: @cwl-botd/bot-detection-react (BotDetectionProvider, useBotDetection hook, context) and @cwl-botd/bot-detection-next (middleware with bot score headers/cookies, useNextBotDetection client hook with server sync, re-exports React primitives). 228 tests passing. Good monorepo foundation (Turborepo, pnpm, TypeScript strict, ESLint).
 
 ---
 
@@ -242,7 +242,7 @@ Phase 1 complete (CI deferred to Phase 8), Phase 2 complete, Phase 3 complete, P
 
 ## Phase 5: API Refinement & Developer Experience
 
-> **Priority: HIGH** — Enterprise adoption depends on great DX (4 of 5 tasks complete).
+> **Priority: HIGH** — Enterprise adoption depends on great DX (5 of 5 tasks complete).
 
 - [x] **5.1 Refine public API surface**
   - `load(options?) => Promise<BotDetector>`
@@ -282,11 +282,11 @@ Phase 1 complete (CI deferred to Phase 8), Phase 2 complete, Phase 3 complete, P
   - `detector.use(plugin)` registration
   - Built-in plugins: honeypot detection, cookie-less browsing detection
 
-- [ ] **5.5 Framework integration packages**
-  - `packages/bot-detection-react`: `useBotDetection()` hook
-  - `packages/bot-detection-next`: middleware + client hook
-  - Ensure SSR compatibility (no window access during SSR)
-  - Add framework-specific examples
+- [x] **5.5 Framework integration packages**
+  - `packages/bot-detection-react`: `useBotDetection()` hook, `BotDetectionProvider`, context
+  - `packages/bot-detection-next`: `createBotDetectionMiddleware()` + `useNextBotDetection()` client hook with cookie sync
+  - SSR compatible (no window access during SSR, `'use client'` directives)
+  - Dual ESM+CJS builds via tsup, full TypeScript types
 
 ---
 
