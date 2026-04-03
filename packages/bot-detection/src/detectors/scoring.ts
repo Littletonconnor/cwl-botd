@@ -38,6 +38,10 @@ const DEFAULT_WEIGHTS: Record<string, number> = {
   mathFingerprint: 0.6,
   spatialConsistency: 0.8,
   temporalConsistency: 0.7,
+  mouseMovement: 0.7,
+  keyboardBehavior: 0.6,
+  scrollBehavior: 0.5,
+  interactionTiming: 0.6,
 }
 
 const DEFAULT_THRESHOLD = 0.4

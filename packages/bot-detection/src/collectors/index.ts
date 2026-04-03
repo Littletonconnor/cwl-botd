@@ -1,4 +1,5 @@
 import { getAudioFingerprint } from './audio_fingerprint';
+import { getBehaviorSnapshot } from './behavior_snapshot';
 import { getWebGl } from './canvas';
 import { getCanvasFingerprint } from './canvas_fingerprint';
 import { getClickBehavior } from './click_behavior';
@@ -32,4 +33,5 @@ export const collectors = {
   webGlFingerprint: getWebGlFingerprint,
   audioFingerprint: getAudioFingerprint,
   fontEnumeration: getFontEnumeration,
+  behaviorSnapshot: getBehaviorSnapshot,
 };
