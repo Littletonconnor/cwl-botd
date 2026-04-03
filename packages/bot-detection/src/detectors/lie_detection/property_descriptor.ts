@@ -28,7 +28,6 @@ const detector: Detector = {
           }
         }
       } catch {
-        // skip inaccessible
       }
     }
 

@@ -28,7 +28,6 @@ const detector: Detector = {
           overridden.push(name)
         }
       } catch {
-        // skip inaccessible functions
       }
     }
 

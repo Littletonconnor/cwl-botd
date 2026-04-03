@@ -218,4 +218,4 @@ pnpm format
 
 ## Code Style
 
-- **No verbose comments.** Do not add unnecessary, obvious, or redundant comments throughout the codebase. Code should be self-explanatory. Only add comments where the logic is non-obvious or requires clarification for future maintainers.
+- **No redundant comments.** Do not add comments that restate what the code already says. This includes comments on empty catch blocks (e.g. `// ignore`, `// skip`), comments that paraphrase variable names or function calls, and comments that describe obvious control flow. Assume the reader can read code. The only acceptable comments explain *why* something non-obvious is done, not *what* is being done.

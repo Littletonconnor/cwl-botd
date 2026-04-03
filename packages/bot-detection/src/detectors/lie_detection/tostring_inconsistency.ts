@@ -30,7 +30,6 @@ const detector: Detector = {
           inconsistent.push(name)
         }
       } catch {
-        // skip — some may throw in certain browsers
       }
     }
 

@@ -12,6 +12,7 @@ function isProxied(obj: object, prop: string): boolean {
   } catch {
     return true
   }
+
   return false
 }
 
@@ -32,7 +33,6 @@ function checkNavigatorProxy(): string[] {
       suspicious.push('navigator.__proto__ !== Navigator.prototype')
     }
   } catch {
-    // ignore
   }
 
   return suspicious

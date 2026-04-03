@@ -30,7 +30,6 @@ const detector: Detector = {
           tampered.push(name)
         }
       } catch {
-        // inaccessible or throws — not necessarily tampered
       }
     }
 
