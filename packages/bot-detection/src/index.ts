@@ -17,3 +17,13 @@ export type {
   Signal,
 } from './detectors'
 export type { ScoringOptions } from './detectors/scoring'
+export { BehaviorTracker } from './behavioral'
+export type {
+  BehaviorSnapshot,
+  BehaviorTrackerOptions,
+  MouseEvent_,
+  ClickEvent_,
+  KeyEvent_,
+  ScrollEvent_,
+} from './behavioral'
+export { setBehaviorSnapshot } from './collectors/behavior_snapshot'
