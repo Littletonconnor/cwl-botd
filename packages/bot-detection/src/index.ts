@@ -67,3 +67,8 @@ export type {
   KeyEvent_,
   ScrollEvent_,
 } from './behavioral'
+
+export { defineDetector, defineCollector, definePlugin } from './plugin'
+export type { Plugin, CollectorFn } from './plugin'
+
+export { honeypotPlugin, cookielessPlugin } from './plugins'

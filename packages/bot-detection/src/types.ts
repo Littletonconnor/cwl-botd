@@ -1,6 +1,7 @@
 import { collectors } from './collectors'
 import type { DetectionResult } from './detectors/types'
 import type { ScoringOptions } from './detectors/scoring'
+import type { Plugin } from './plugin'
 
 export const State = {
   Success: 'Success',
@@ -46,6 +47,7 @@ export interface BehaviorResult {
 export interface BotDetectorInterface {
   detect(options?: DetectOptions): Promise<DetectionResult>
   collect(): Promise<CollectorDict>
+  use(plugin: Plugin): Promise<void>
   getBehaviorScore(): BehaviorResult
   startBehaviorTracking(): void
   stopBehaviorTracking(): void
