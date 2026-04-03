@@ -18,7 +18,7 @@ Analysis of the following libraries and approaches informed this plan:
 
 ## Current State
 
-Phase 1 complete (CI deferred to Phase 8), Phase 2 complete, Phase 3 complete. 16 collectors working (added canvas fingerprint, WebGL advanced fingerprint, AudioContext fingerprint, font enumeration). Build pipeline (tsup, ESM+CJS+UMD). Test framework (vitest + jsdom). Behavioral collectors fixed. Core detection engine: DetectorRegistry, 19 automation detectors, tool-specific detectors, 6 browser environment detectors, 5 lie detection detectors, 7 fingerprint/consistency detectors (canvas fingerprint, WebGL advanced, audio fingerprint, font enumeration, math function fingerprinting, spatial consistency, temporal consistency), weighted scoring engine. 121 tests passing. Good monorepo foundation (Turborepo, pnpm, TypeScript strict, ESLint).
+Phase 1 complete (CI deferred to Phase 8), Phase 2 complete, Phase 3 complete, Phase 4 complete. 17 collectors working (added behaviorSnapshot collector). Build pipeline (tsup, ESM+CJS+UMD). Test framework (vitest + jsdom). BehaviorTracker class with circular buffer, time-windowed accumulation, start/stop/reset lifecycle. Core detection engine: DetectorRegistry, 19 automation detectors, tool-specific detectors, 6 browser environment detectors, 5 lie detection detectors, 7 fingerprint/consistency detectors, 4 behavioral detectors (mouse movement, keyboard, scroll, interaction timing), weighted scoring engine. 146 tests passing. Good monorepo foundation (Turborepo, pnpm, TypeScript strict, ESLint).
 
 ---
 
@@ -201,16 +201,16 @@ Phase 1 complete (CI deferred to Phase 8), Phase 2 complete, Phase 3 complete. 1
 
 ## Phase 4: Behavioral Analysis
 
-> **Priority: MEDIUM-HIGH** — Catches bots that perfectly spoof environment data.
+> **Priority: MEDIUM-HIGH** — Catches bots that perfectly spoof environment data (5 of 5 tasks complete).
 
-- [ ] **4.1 Redesign behavioral data collection architecture**
+- [x] **4.1 Redesign behavioral data collection architecture**
   - Create `BehaviorTracker` class with time-windowed accumulation
   - Implement circular buffer for event storage (bounded memory)
   - Add `start()` / `stop()` / `reset()` lifecycle methods
   - Configurable collection duration and sample rates
   - Passive collection mode (doesn't interfere with page)
 
-- [ ] **4.2 Implement mouse movement analysis**
+- [x] **4.2 Implement mouse movement analysis**
   - Track movement velocity, acceleration, jerk
   - Detect perfectly straight lines (synthetic movement)
   - Detect zero-duration movements (teleportation)
@@ -219,20 +219,20 @@ Phase 1 complete (CI deferred to Phase 8), Phase 2 complete, Phase 3 complete. 1
   - Calculate entropy of movement paths
   - Detect missing mousemove before click (synthetic clicks via `dispatchEvent`)
 
-- [ ] **4.3 Implement keyboard analysis**
+- [x] **4.3 Implement keyboard analysis**
   - Key press/release timing distribution (humans follow log-normal distribution)
   - Detect perfectly uniform typing speed (fixed intervals = bot)
   - Detect impossible key combinations or timing
   - Analyze key hold duration patterns
   - Detect clipboard paste vs typing (where relevant)
 
-- [ ] **4.4 Implement scroll analysis**
+- [x] **4.4 Implement scroll analysis**
   - Scroll velocity and acceleration patterns
   - Detect perfectly uniform scroll increments
   - Detect scroll without preceding mouse/touch activity
   - Analyze scroll direction changes and momentum
 
-- [ ] **4.5 Implement interaction timing analysis**
+- [x] **4.5 Implement interaction timing analysis**
   - Time-to-first-interaction from page load
   - Click timing distribution (humans follow power law)
   - Detect suspiciously fast form filling
