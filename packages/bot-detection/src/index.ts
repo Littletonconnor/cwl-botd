@@ -49,6 +49,15 @@ export type {
   PerformanceConfig,
 } from './config'
 
+export { DebugLogger } from './debug'
+export type {
+  DebugReport,
+  DebugLogEntry,
+  CollectorDebugInfo,
+  DetectorDebugInfo,
+  ScoringDebugInfo,
+} from './debug'
+
 export { BehaviorTracker } from './behavioral'
 export type {
   BehaviorSnapshot,

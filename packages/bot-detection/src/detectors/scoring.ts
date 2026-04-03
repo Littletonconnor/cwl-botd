@@ -1,3 +1,4 @@
+import type { DebugLogger } from '../debug'
 import { BotKind, type BotKindValue, type DetectionResult, type Signal } from './types'
 
 const DEFAULT_WEIGHTS: Record<string, number> = {
@@ -51,7 +52,7 @@ export interface ScoringOptions {
   threshold?: number
 }
 
-export function score(signals: Signal[], options?: ScoringOptions): DetectionResult {
+export function score(signals: Signal[], options?: ScoringOptions, debugLogger?: DebugLogger): DetectionResult {
   const weights = { ...DEFAULT_WEIGHTS, ...options?.weights }
   const threshold = options?.threshold ?? DEFAULT_THRESHOLD
 
@@ -72,7 +73,7 @@ export function score(signals: Signal[], options?: ScoringOptions): DetectionRes
   const botKind = determineBotKind(detectedSignals)
   const confidence = computeConfidence(detectedSignals, normalizedScore)
 
-  return {
+  const result: DetectionResult = {
     bot: confidence >= threshold,
     botKind,
     confidence,
@@ -80,6 +81,25 @@ export function score(signals: Signal[], options?: ScoringOptions): DetectionRes
     score: normalizedScore,
     signals,
   }
+
+  if (debugLogger) {
+    debugLogger.setScoringResult({
+      threshold,
+      weights,
+      normalizedScore,
+      confidence,
+      totalWeight,
+      weightedScore,
+      bot: result.bot,
+      botKind: result.botKind,
+    })
+    debugLogger.log('score', 'scoring', `bot=${result.bot} confidence=${confidence.toFixed(3)} score=${normalizedScore.toFixed(3)}`, {
+      detected: detectedSignals.length,
+      total: signals.length,
+    })
+  }
+
+  return result
 }
 
 function determineBotKind(detectedSignals: Signal[]): BotKindValue {
