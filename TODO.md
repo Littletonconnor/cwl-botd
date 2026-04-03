@@ -18,7 +18,7 @@ Analysis of the following libraries and approaches informed this plan:
 
 ## Current State
 
-~40% complete. 12 collectors exist and working. Build pipeline added (tsup, ESM+CJS+UMD). Behavioral collectors (mouse, click, scroll) fixed — sync/async bug resolved, SSR guards and listener cleanup added. Detection engine is still empty stubs. No tests, no scoring engine, no classification output. Good monorepo foundation (Turborepo, pnpm, TypeScript strict, ESLint).
+~55% of Phase 1-2 complete. 12 collectors exist and working. Build pipeline added (tsup, ESM+CJS+UMD). Test framework set up (vitest + jsdom). Behavioral collectors (mouse, click, scroll) fixed — sync/async bug resolved, SSR guards and listener cleanup added. Core detection engine implemented: Detector interface, DetectorRegistry, 19 automation artifact detectors, tool-specific detectors (Selenium, Puppeteer, Playwright, PhantomJS, Nightmare/Electron), and weighted scoring engine with configurable thresholds. 38 tests covering detectors, registry, scoring, and end-to-end pipeline. Good monorepo foundation (Turborepo, pnpm, TypeScript strict, ESLint).
 
 ---
 
@@ -57,16 +57,16 @@ Analysis of the following libraries and approaches informed this plan:
 
 ## Phase 2: Core Detection Engine
 
-> **Priority: CRITICAL** — This is the heart of the library (currently 0% done).
+> **Priority: CRITICAL** — This is the heart of the library (4 of 6 tasks complete).
 
-- [ ] **2.1 Design detector interface and registry**
+- [x] **2.1 Design detector interface and registry**
   - Define `Detector` interface: `{ name, category, detect(data) => Signal }`
   - Define `Signal` type: `{ detected: boolean, score: number, reason: string }`
   - Create `DetectorRegistry` class for registering/running detectors
   - Support detector categories: `automation`, `inconsistency`, `behavioral`
   - Allow user-registered custom detectors (plugin system)
 
-- [ ] **2.2 Implement automation artifact detectors (all 19 BotD signals)**
+- [x] **2.2 Implement automation artifact detectors (all 19 BotD signals)**
   - `webdriver`: `navigator.webdriver === true` (+ property descriptor validation)
   - `eval_length`: `eval.toString().length` differs by engine (V8=33, SpiderMonkey=37, Webkit=37, IE=39)
   - `error_trace`: `/PhantomJS/i` regex in Error stack traces
@@ -87,7 +87,7 @@ Analysis of the following libraries and approaches informed this plan:
   - `webgl`: Renderer contains "SwiftShader", "Mesa OffScreen", "llvmpipe"
   - `window_external`: Check `window.external` properties
 
-- [ ] **2.3 Implement tool-specific detectors**
+- [x] **2.3 Implement tool-specific detectors**
   - **Selenium/WebDriver:**
     - `document.$cdc_asdjflasutopfhvcZLmcfl_` (ChromeDriver leak)
     - `window.__selenium_unwrapped`, `__webdriver_evaluate`, `__driver_evaluate`
@@ -125,7 +125,7 @@ Analysis of the following libraries and approaches informed this plan:
   - Property descriptor validation via `Object.getOwnPropertyDescriptor`
   - Cross-attribute consistency (platform vs GPU vs fonts)
 
-- [ ] **2.6 Implement scoring engine**
+- [x] **2.6 Implement scoring engine**
   - Define score weights per detector (configurable)
   - Implement weighted scoring aggregation
   - Define threshold levels: `definiteBot` (>0.9), `likelyBot` (>0.7), `suspicious` (>0.4), `likelyHuman` (<0.4)
