@@ -1,8 +1,7 @@
 'use client';
 
-import { load } from '@cwl-botd/bot-detection';
+import { load, BotDetector } from '@cwl-botd/bot-detection';
 import { useEffect, useState } from 'react';
-import BotDetector from '../../../packages/bot-detection/src/detector';
 
 interface BotDState {
   collections: any;
@@ -30,7 +29,7 @@ export default function Home() {
   );
 }
 
-export function useBotDetection(): [BotDState, () => void] {
+function useBotDetection(): [BotDState, () => void] {
   const [botD, setBotD] = useState<BotDetector>();
   const [state, setState] = useState<BotDState | object>({});
   const [update, setUpdate] = useState(0);
@@ -40,12 +39,11 @@ export function useBotDetection(): [BotDState, () => void] {
   useEffect(() => {
     async function init() {
       const detector = await load();
-      const collections = detector.getCollections();
-      const detections = detector.getDetections();
+      const detections = await detector.detect();
 
       setBotD(detector);
       setState({
-        collections,
+        collections: detector.getCollections(),
         detections,
       });
     }
@@ -54,13 +52,17 @@ export function useBotDetection(): [BotDState, () => void] {
   }, []);
 
   useEffect(() => {
-    const collections = botD?.getCollections();
-    const detections = botD?.getDetections();
+    if (!botD) return;
 
-    setState({
-      collections,
-      detections,
-    });
+    async function refresh() {
+      const detections = await botD!.detect();
+      setState({
+        collections: botD!.getCollections(),
+        detections,
+      });
+    }
+
+    refresh();
   }, [update]);
 
   return [state as BotDState, onUpdate];
