@@ -1,7 +1,10 @@
+import { getAudioFingerprint } from './audio_fingerprint';
 import { getWebGl } from './canvas';
+import { getCanvasFingerprint } from './canvas_fingerprint';
 import { getClickBehavior } from './click_behavior';
 import { getDimension } from './dimension';
 import { getDocumentFocus } from './document_focus';
+import { getFontEnumeration } from './font_enumeration';
 import { getLanguage } from './language';
 import { getMouseBehavior } from './mouse_behavior';
 import { getUserPlatform } from './platform';
@@ -10,6 +13,7 @@ import { getScrollBehavior } from './scroll_behavior';
 import { getTimezone } from './timezone';
 import { getUserAgent } from './user_agent';
 import { getWebDriver } from './webdriver';
+import { getWebGlFingerprint } from './webgl_fingerprint';
 
 export const collectors = {
   userAgent: getUserAgent,
@@ -24,4 +28,8 @@ export const collectors = {
   clickBehavior: getClickBehavior,
   dimension: getDimension,
   plugins: getPlugins,
+  canvasFingerprint: getCanvasFingerprint,
+  webGlFingerprint: getWebGlFingerprint,
+  audioFingerprint: getAudioFingerprint,
+  fontEnumeration: getFontEnumeration,
 };

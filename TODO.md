@@ -18,7 +18,7 @@ Analysis of the following libraries and approaches informed this plan:
 
 ## Current State
 
-Phase 1 nearly done (CI pending), Phase 2 complete. 12 collectors working. Build pipeline (tsup, ESM+CJS+UMD). Test framework (vitest + jsdom). Behavioral collectors fixed. Core detection engine: DetectorRegistry, 19 automation detectors, tool-specific detectors, 6 browser environment detectors (eval/engine consistency, error stack analysis, native function checks, performance.now precision, clock skew, screen consistency), 5 lie detection detectors (prototype chain, Proxy detection, toString inconsistency, property descriptors, cross-attribute consistency), weighted scoring engine. 89 tests passing. Good monorepo foundation (Turborepo, pnpm, TypeScript strict, ESLint).
+Phase 1 complete (CI deferred to Phase 8), Phase 2 complete, Phase 3 complete. 16 collectors working (added canvas fingerprint, WebGL advanced fingerprint, AudioContext fingerprint, font enumeration). Build pipeline (tsup, ESM+CJS+UMD). Test framework (vitest + jsdom). Behavioral collectors fixed. Core detection engine: DetectorRegistry, 19 automation detectors, tool-specific detectors, 6 browser environment detectors, 5 lie detection detectors, 7 fingerprint/consistency detectors (canvas fingerprint, WebGL advanced, audio fingerprint, font enumeration, math function fingerprinting, spatial consistency, temporal consistency), weighted scoring engine. 121 tests passing. Good monorepo foundation (Turborepo, pnpm, TypeScript strict, ESLint).
 
 ---
 
@@ -40,18 +40,14 @@ Phase 1 nearly done (CI pending), Phase 2 complete. 12 collectors working. Build
   - Add `test` task to `turbo.json` pipeline
   - Create test helpers: mock navigator, mock window, mock document
 
-- [ ] **1.3 Add CI/GitHub Actions workflow**
-  - Lint, type-check, test, build on push/PR
-  - Matrix: Node 18, 20, 22
-  - Cache pnpm store and turbo cache
-  - Add status badges to README
-
-- [x] **1.4 Fix existing collector issues**
+- [x] **1.3 Fix existing collector issues**
   - Fix `mouse_behavior.ts`: returns empty array because addEventListener is async but return is sync — refactor to accumulate over time window
   - Fix `click_behavior.ts`: same sync/async issue
   - Fix `scroll_behavior.ts`: same sync/async issue
   - Add cleanup/teardown for event listeners (memory leak prevention)
   - Add SSR safety checks (`typeof window/document !== 'undefined'`)
+
+> **Note:** CI/GitHub Actions moved to Phase 8 — not needed until the library is in solid shape.
 
 ---
 
@@ -147,9 +143,9 @@ Phase 1 nearly done (CI pending), Phase 2 complete. 12 collectors working. Build
 
 ## Phase 3: Advanced Fingerprinting & Consistency Checks
 
-> **Priority: HIGH** — Catches sophisticated bots that pass basic checks.
+> **Priority: HIGH** — Catches sophisticated bots that pass basic checks (7 of 7 tasks complete).
 
-- [ ] **3.1 Implement Canvas fingerprinting detector**
+- [x] **3.1 Implement Canvas fingerprinting detector**
   - Canvas 2D rendering: draw specific shapes/text/gradients, hash via `toDataURL()`
   - Detect canvas read blocking (privacy extensions)
   - Compare canvas hash stability across calls (bots may inject noise)
@@ -157,7 +153,7 @@ Phase 1 nearly done (CI pending), Phase 2 complete. 12 collectors working. Build
   - Canvas noise injection detection (puppeteer-extra-stealth technique)
   - Picasso-style challenge: random drawing instructions + hash verification (DataDome approach — deterministic per OS/browser/GPU)
 
-- [ ] **3.2 Implement WebGL fingerprinting detector**
+- [x] **3.2 Implement WebGL fingerprinting detector**
   - `WEBGL_debug_renderer_info` extension: `UNMASKED_VENDOR_WEBGL` / `UNMASKED_RENDERER_WEBGL`
   - Detect virtual GPU: "SwiftShader", "llvmpipe", "Mesa OffScreen"
   - Extension enumeration: test 50+ WebGL extensions for capability matrix
@@ -166,7 +162,7 @@ Phase 1 nearly done (CI pending), Phase 2 complete. 12 collectors working. Build
   - Shader precision format consistency
   - Cross-reference GPU with claimed OS (Apple GPU on Windows = spoofed)
 
-- [ ] **3.3 Implement AudioContext fingerprinting**
+- [x] **3.3 Implement AudioContext fingerprinting**
   - `OfflineAudioContext` + `OscillatorNode` (triangle wave, 1000 Hz)
   - Process through `DynamicsCompressorNode` (gain, knee, ratio, attack, release)
   - Sample waveform via `AnalyserNode`, hash float array output
@@ -174,17 +170,17 @@ Phase 1 nearly done (CI pending), Phase 2 complete. 12 collectors working. Build
   - Detect audio processing anomalies in headless environments
   - Audio fingerprint stability check (43% better bot detection than cookies alone)
 
-- [ ] **3.4 Implement font enumeration detector**
+- [x] **3.4 Implement font enumeration detector**
   - Side-channel width measurement: render text with various fonts, measure width difference vs fallback
   - Compare detected fonts vs expected for claimed OS
   - Detect font enumeration blocking (privacy extensions)
 
-- [ ] **3.5 Implement Math function fingerprinting**
+- [x] **3.5 Implement Math function fingerprinting**
   - `Math.tan`, `Math.acos`, `Math.cosh` differ in least-significant bits across engines
   - Provides 2-4 bits of entropy even in privacy-hardened browsers
   - Cross-reference with claimed browser engine
 
-- [ ] **3.6 Implement spatial consistency engine**
+- [x] **3.6 Implement spatial consistency engine**
   - UA claims Windows but platform says Linux
   - Timezone doesn't match locale/language
   - Screen resolution impossible for claimed device
@@ -194,7 +190,7 @@ Phase 1 nearly done (CI pending), Phase 2 complete. 12 collectors working. Build
   - Language preferences vs timezone geographic mismatch
   - Color depth / pixel ratio anomalies for claimed device
 
-- [ ] **3.7 Implement temporal consistency engine**
+- [x] **3.7 Implement temporal consistency engine**
   - Store fingerprint hash in sessionStorage/localStorage
   - Detect fingerprint instability between page loads
   - Clock drift analysis: `performance.now()` vs `Date.now()` consistency
@@ -364,7 +360,13 @@ Phase 1 nearly done (CI pending), Phase 2 complete. 12 collectors working. Build
 
 > **Priority: HIGH** — Required for npm publish and enterprise adoption.
 
-- [ ] **8.1 Package configuration for npm publish**
+- [ ] **8.1 Add CI/GitHub Actions workflow**
+  - Lint, type-check, test, build on push/PR
+  - Matrix: Node 18, 20, 22
+  - Cache pnpm store and turbo cache
+  - Add status badges to README
+
+- [ ] **8.2 Package configuration for npm publish**
   - Finalize package.json metadata (name, description, keywords, license)
   - Set up semantic versioning with changesets or release-please
   - Configure npm provenance for supply chain security
@@ -372,14 +374,14 @@ Phase 1 nearly done (CI pending), Phase 2 complete. 12 collectors working. Build
   - Add CHANGELOG.md automation
   - Verify tree-shaking works (ESM `sideEffects: false`)
 
-- [ ] **8.2 Bundle optimization**
+- [ ] **8.3 Bundle optimization**
   - Analyze bundle size with size-limit
   - Ensure zero runtime dependencies
   - Code-split detectors for tree-shaking (import only what you need)
   - Add subpath exports: `@cwl-botd/bot-detection/detectors`
   - Verify compatibility: Webpack 4/5, Vite, Rollup, esbuild
 
-- [ ] **8.3 CDN distribution**
+- [ ] **8.4 CDN distribution**
   - UMD bundle for `<script>` tag usage
   - Auto-publish to unpkg and jsdelivr via npm
   - Add CDN usage examples to docs

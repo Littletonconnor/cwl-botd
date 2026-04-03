@@ -31,6 +31,13 @@ const DEFAULT_WEIGHTS: Record<string, number> = {
   tostringInconsistency: 0.8,
   propertyDescriptor: 0.8,
   crossAttribute: 0.7,
+  canvasFingerprint: 0.7,
+  webglAdvanced: 0.8,
+  audioFingerprint: 0.6,
+  fontEnumeration: 0.5,
+  mathFingerprint: 0.6,
+  spatialConsistency: 0.8,
+  temporalConsistency: 0.7,
 }
 
 const DEFAULT_THRESHOLD = 0.4

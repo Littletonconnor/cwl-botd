@@ -1,5 +1,6 @@
 import { automationDetectors } from './automation'
 import { environmentDetectors } from './environment'
+import { fingerprintDetectors } from './fingerprint'
 import { lieDetectors } from './lie_detection'
 import { DetectorRegistry } from './registry'
 
@@ -20,5 +21,6 @@ export function createDefaultRegistry(): DetectorRegistry {
   registry.registerAll(automationDetectors)
   registry.registerAll(environmentDetectors)
   registry.registerAll(lieDetectors)
+  registry.registerAll(fingerprintDetectors)
   return registry
 }
