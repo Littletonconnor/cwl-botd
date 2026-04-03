@@ -1,15 +1,27 @@
-export function getScrollBehavior() {
-  let scrollEvents: {
-    timestamp: number;
-    scrollY: number;
-  }[] = [];
+const COLLECTION_WINDOW_MS = 500;
 
-  window.addEventListener('scroll', (e) => {
-    scrollEvents.push({
-      timestamp: Date.now(),
-      scrollY: window.scrollY,
-    });
+export function getScrollBehavior(): Promise<
+  { timestamp: number; scrollY: number }[]
+> {
+  if (typeof window === 'undefined') {
+    return Promise.resolve([]);
+  }
+
+  return new Promise((resolve) => {
+    const events: { timestamp: number; scrollY: number }[] = [];
+
+    const handler = () => {
+      events.push({
+        timestamp: Date.now(),
+        scrollY: window.scrollY,
+      });
+    };
+
+    window.addEventListener('scroll', handler);
+
+    setTimeout(() => {
+      window.removeEventListener('scroll', handler);
+      resolve(events);
+    }, COLLECTION_WINDOW_MS);
   });
-
-  return scrollEvents;
 }

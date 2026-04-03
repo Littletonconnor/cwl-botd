@@ -1,19 +1,34 @@
-export function getClickBehavior() {
-  const clickEvents: {
-    timestamp: number;
-    x: number;
-    y: number;
-    target: string | null;
-  }[] = [];
+const COLLECTION_WINDOW_MS = 500;
 
-  document.addEventListener('click', (event) => {
-    clickEvents.push({
-      timestamp: Date.now(),
-      x: event.clientX,
-      y: event.clientY,
-      target: event.target instanceof Element ? event.target.tagName : null,
-    });
+export function getClickBehavior(): Promise<
+  { timestamp: number; x: number; y: number; target: string | null }[]
+> {
+  if (typeof document === 'undefined') {
+    return Promise.resolve([]);
+  }
+
+  return new Promise((resolve) => {
+    const events: {
+      timestamp: number;
+      x: number;
+      y: number;
+      target: string | null;
+    }[] = [];
+
+    const handler = (event: MouseEvent) => {
+      events.push({
+        timestamp: Date.now(),
+        x: event.clientX,
+        y: event.clientY,
+        target: event.target instanceof Element ? event.target.tagName : null,
+      });
+    };
+
+    document.addEventListener('click', handler);
+
+    setTimeout(() => {
+      document.removeEventListener('click', handler);
+      resolve(events);
+    }, COLLECTION_WINDOW_MS);
   });
-
-  return clickEvents;
 }
