@@ -42,6 +42,14 @@ export type {
 } from './types'
 export { State } from './types'
 
+export type {
+  BotDetectionConfig,
+  DetectorConfig,
+  CollectorConfig,
+  PrivacyConfig,
+  PerformanceConfig,
+} from './config'
+
 export { BehaviorTracker } from './behavioral'
 export type {
   BehaviorSnapshot,

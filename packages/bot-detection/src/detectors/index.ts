@@ -6,6 +6,7 @@ import { lieDetectors } from './lie_detection'
 import { DetectorRegistry } from './registry'
 
 export { DetectorRegistry } from './registry'
+export type { RegistryRunOptions } from './registry'
 export { score } from './scoring'
 export type { ScoringOptions } from './scoring'
 export { BotKind, DetectorCategory } from './types'

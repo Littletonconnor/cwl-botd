@@ -1,13 +1,18 @@
 import { createDefaultRegistry, score } from './detectors'
 import type { DetectionResult } from './detectors/types'
 import type { ScoringOptions } from './detectors/scoring'
+import type { RegistryRunOptions } from './detectors/registry'
 import { AbstractCollectorDict, CollectorDict, State } from './types'
 import { BotdError } from './utils'
 
 const defaultRegistry = createDefaultRegistry()
 
-function detect(data: CollectorDict, options?: ScoringOptions): DetectionResult {
-  const signals = defaultRegistry.run(data)
+function detect(
+  data: CollectorDict,
+  options?: ScoringOptions,
+  detectorFilter?: RegistryRunOptions,
+): DetectionResult {
+  const signals = defaultRegistry.run(data, detectorFilter)
   return score(signals, options)
 }
 

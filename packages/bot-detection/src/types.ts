@@ -1,7 +1,7 @@
 import { collectors } from './collectors'
-import type { BehaviorTrackerOptions } from './behavioral/tracker'
 import type { DetectionResult } from './detectors/types'
 import type { ScoringOptions } from './detectors/scoring'
+import type { BotDetectionConfig } from './config'
 
 export const State = {
   Success: 'Success',
@@ -37,11 +37,7 @@ export interface DetectOptions extends ScoringOptions {
   debug?: boolean
 }
 
-export interface LoadOptions {
-  scoring?: ScoringOptions
-  behavior?: BehaviorTrackerOptions
-  monitoring?: boolean
-}
+export type LoadOptions = BotDetectionConfig
 
 export interface BehaviorResult {
   bot: boolean

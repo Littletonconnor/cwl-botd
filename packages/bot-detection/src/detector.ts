@@ -3,6 +3,7 @@ import { BehaviorTracker } from './behavioral'
 import type { BehaviorTrackerOptions, BehaviorSnapshot } from './behavioral/tracker'
 import { setBehaviorSnapshot } from './collectors/behavior_snapshot'
 import { collectors } from './collectors'
+import { resolveFilters, filterByName, type ResolvedFilters } from './config'
 import type { DetectionResult } from './detectors/types'
 import type {
   BehaviorResult,
@@ -19,11 +20,15 @@ export class BotDetector implements BotDetectorInterface {
   private behaviorTracker: BehaviorTracker | undefined
   private behaviorOptions: BehaviorTrackerOptions | undefined
   private monitoring: boolean
+  private config: LoadOptions
+  private filters: ResolvedFilters
 
   constructor(options?: LoadOptions) {
+    this.config = options ?? {}
     this.scoringOptions = options?.scoring
     this.behaviorOptions = options?.behavior
     this.monitoring = options?.monitoring ?? false
+    this.filters = resolveFilters(this.config)
   }
 
   public async detect(options?: DetectOptions): Promise<DetectionResult> {
@@ -34,17 +39,33 @@ export class BotDetector implements BotDetectorInterface {
     if (this.behaviorTracker?.isRunning()) {
       const snapshot = this.behaviorTracker.snapshot()
       setBehaviorSnapshot(snapshot)
-      this.collections = await collect(collectors)
+      this.collections = await collect(this.getFilteredCollectors())
+    }
+
+    const detectorFilter = {
+      enabled: this.config.detectors?.enabled,
+      disabled: [
+        ...(this.config.detectors?.disabled ?? []),
+        ...this.filters.disabledDetectors,
+      ],
     }
 
     const opts = options ?? this.scoringOptions
-    this.detections = detect(this.collections!, opts)
+    this.detections = detect(this.collections!, opts, detectorFilter)
     return this.detections
   }
 
   public async collect(): Promise<CollectorDict> {
-    this.collections = await collect(collectors)
+    this.collections = await collect(this.getFilteredCollectors())
     return this.collections
+  }
+
+  private getFilteredCollectors() {
+    return filterByName(
+      collectors,
+      this.config.collectors,
+      this.filters.disabledCollectors,
+    )
   }
 
   public getBehaviorScore(): BehaviorResult {
