@@ -1,0 +1,98 @@
+import { BotKind, type BotKindValue, type DetectionResult, type Signal } from './types'
+
+const DEFAULT_WEIGHTS: Record<string, number> = {
+  webdriver: 1.0,
+  userAgent: 0.9,
+  evalLength: 0.6,
+  errorTrace: 0.8,
+  distinctiveProperties: 1.0,
+  documentElementKeys: 0.9,
+  windowSize: 0.7,
+  rtt: 0.6,
+  notificationPermissions: 0.4,
+  pluginsInconsistency: 0.7,
+  pluginsArray: 0.6,
+  languagesInconsistency: 0.7,
+  mimeTypesConsistence: 0.5,
+  productSub: 0.5,
+  functionBind: 0.8,
+  process: 0.8,
+  appVersion: 0.7,
+  webgl: 0.8,
+  windowExternal: 0.9,
+}
+
+const DEFAULT_THRESHOLD = 0.4
+
+export interface ScoringOptions {
+  weights?: Record<string, number>
+  threshold?: number
+}
+
+export function score(signals: Signal[], options?: ScoringOptions): DetectionResult {
+  const weights = { ...DEFAULT_WEIGHTS, ...options?.weights }
+  const threshold = options?.threshold ?? DEFAULT_THRESHOLD
+
+  const detectedSignals = signals.filter((s) => s.detected)
+  const reasons = detectedSignals.map((s) => s.reason)
+
+  let totalWeight = 0
+  let weightedScore = 0
+
+  for (const signal of signals) {
+    const weight = weights[signal.reason.split(':')[0]!] ?? 0.5
+    totalWeight += weight
+    weightedScore += signal.score * weight
+  }
+
+  const normalizedScore = totalWeight > 0 ? weightedScore / totalWeight : 0
+
+  const botKind = determineBotKind(detectedSignals)
+  const confidence = computeConfidence(detectedSignals, normalizedScore)
+
+  return {
+    bot: confidence >= threshold,
+    botKind,
+    confidence,
+    reasons,
+    score: normalizedScore,
+    signals,
+  }
+}
+
+function determineBotKind(detectedSignals: Signal[]): BotKindValue {
+  const kindCounts = new Map<BotKindValue, number>()
+
+  for (const signal of detectedSignals) {
+    if (signal.botKind) {
+      kindCounts.set(signal.botKind, (kindCounts.get(signal.botKind) ?? 0) + signal.score)
+    }
+  }
+
+  if (kindCounts.size === 0) {
+    return detectedSignals.length > 0 ? BotKind.Unknown : BotKind.Unknown
+  }
+
+  let bestKind = BotKind.Unknown as BotKindValue
+  let bestScore = 0
+  for (const [kind, score] of kindCounts) {
+    if (score > bestScore) {
+      bestScore = score
+      bestKind = kind
+    }
+  }
+
+  return bestKind
+}
+
+function computeConfidence(detectedSignals: Signal[], normalizedScore: number): number {
+  if (detectedSignals.length === 0) return 0
+
+  const hasDefinitiveSignal = detectedSignals.some((s) => s.score >= 1.0)
+  if (hasDefinitiveSignal) return Math.min(normalizedScore + 0.3, 1.0)
+
+  const hasStrongSignals = detectedSignals.filter((s) => s.score >= 0.7).length >= 2
+  if (hasStrongSignals) return Math.min(normalizedScore + 0.2, 1.0)
+
+  return normalizedScore
+}

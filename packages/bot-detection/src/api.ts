@@ -1,7 +1,15 @@
+import { createDefaultRegistry, score } from './detectors'
+import type { DetectionResult } from './detectors/types'
+import type { ScoringOptions } from './detectors/scoring'
 import { AbstractCollectorDict, CollectorDict, State } from './types'
 import { BotdError } from './utils'
 
-function detect() {}
+const defaultRegistry = createDefaultRegistry()
+
+function detect(data: CollectorDict, options?: ScoringOptions): DetectionResult {
+  const signals = defaultRegistry.run(data)
+  return score(signals, options)
+}
 
 async function collect<T extends AbstractCollectorDict>(collectors: T) {
   const components = {} as CollectorDict<T>
@@ -17,7 +25,7 @@ async function collect<T extends AbstractCollectorDict>(collectors: T) {
           state: State.Success,
         }
       } catch (error) {
-        if (error instanceof BotdError) {
+        if (error instanceof BotdError && error.state !== State.Success) {
           components[collectorKey] = {
             state: error.state,
             error: `${error.name}: ${error.message}`,

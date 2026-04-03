@@ -1,23 +1,20 @@
 import { collect, detect } from './api';
 import { collectors } from './collectors';
-import { CollectorDict, DetectionDict } from './types';
+import type { DetectionResult } from './detectors/types';
+import type { ScoringOptions } from './detectors/scoring';
+import type { CollectorDict, BotDetectorInterface } from './types';
 
-/**
- * Class representing a bot detector.
- *
- * @class
- * @implements {BotDetectorInterface}
- */
-export default class BotDetector {
+export default class BotDetector implements BotDetectorInterface {
   private collections: CollectorDict | undefined = undefined;
-  private detections: DetectionDict | undefined = undefined;
+  private detections: DetectionResult | undefined = undefined;
 
-  public detect() {
+  public detect(options?: ScoringOptions): DetectionResult {
     if (this.collections === undefined) {
       throw new Error('BotDetector.detect must be called after BotDetector.collect');
     }
 
-    this.detections = detect();
+    this.detections = detect(this.collections, options);
+    return this.detections;
   }
 
   public async collect() {
