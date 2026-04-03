@@ -18,7 +18,7 @@ Analysis of the following libraries and approaches informed this plan:
 
 ## Current State
 
-Phase 1 complete (CI deferred to Phase 8), Phase 2 complete, Phase 3 complete, Phase 4 complete, Phase 5.1 complete. 17 collectors working (added behaviorSnapshot collector). Build pipeline (tsup, ESM+CJS+UMD). Test framework (vitest + jsdom). BehaviorTracker class with circular buffer, time-windowed accumulation, start/stop/reset lifecycle. Core detection engine: DetectorRegistry, 19 automation detectors, tool-specific detectors, 6 browser environment detectors, 5 lie detection detectors, 7 fingerprint/consistency detectors, 4 behavioral detectors (mouse movement, keyboard, scroll, interaction timing), weighted scoring engine. Refined public API: load(), BotDetector class with full lifecycle methods, DetectOptions, createDefaultRegistry for power users, clean type exports. 166 tests passing. Good monorepo foundation (Turborepo, pnpm, TypeScript strict, ESLint).
+Phase 1 complete (CI deferred to Phase 8), Phase 2 complete, Phase 3 complete, Phase 4 complete, Phase 5.1 complete, Phase 5.2 complete. 17 collectors working (added behaviorSnapshot collector). Build pipeline (tsup, ESM+CJS+UMD). Test framework (vitest + jsdom). BehaviorTracker class with circular buffer, time-windowed accumulation, start/stop/reset lifecycle. Core detection engine: DetectorRegistry, 19 automation detectors, tool-specific detectors, 6 browser environment detectors, 5 lie detection detectors, 7 fingerprint/consistency detectors, 4 behavioral detectors (mouse movement, keyboard, scroll, interaction timing), weighted scoring engine. Refined public API: load(), BotDetector class with full lifecycle methods, DetectOptions, createDefaultRegistry for power users, clean type exports. Configuration system with detector/collector enable/disable, privacy mode (disable fingerprinting by technique), performance mode (skip expensive detectors), and combined preset resolution. 191 tests passing. Good monorepo foundation (Turborepo, pnpm, TypeScript strict, ESLint).
 
 ---
 
@@ -254,7 +254,7 @@ Phase 1 complete (CI deferred to Phase 8), Phase 2 complete, Phase 3 complete, P
   - `detector.destroy() => void` (cleanup listeners)
   - Static: `BotDetector.isBot(result) => boolean` (convenience helper)
 
-- [ ] **5.2 Implement configuration system**
+- [x] **5.2 Implement configuration system**
   - Sensible defaults that work out of the box
   - Configurable detector enable/disable
   - Custom score weights and thresholds

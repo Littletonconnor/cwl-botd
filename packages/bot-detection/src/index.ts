@@ -1,7 +1,7 @@
 import { BotDetector } from './detector'
-import type { LoadOptions } from './types'
+import type { BotDetectionConfig } from './config'
 
-async function load(options?: LoadOptions): Promise<BotDetector> {
+async function load(options?: BotDetectionConfig): Promise<BotDetector> {
   const detector = new BotDetector(options)
   await detector.collect()
 
@@ -33,7 +33,6 @@ export type {
 export type { ScoringOptions } from './detectors/scoring'
 
 export type {
-  LoadOptions,
   DetectOptions,
   BehaviorResult,
   CollectorDict,
@@ -41,6 +40,14 @@ export type {
   StateValue,
 } from './types'
 export { State } from './types'
+
+export type {
+  BotDetectionConfig,
+  DetectorConfig,
+  CollectorConfig,
+  PrivacyConfig,
+  PerformanceConfig,
+} from './config'
 
 export { BehaviorTracker } from './behavioral'
 export type {
