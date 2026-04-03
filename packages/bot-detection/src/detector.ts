@@ -4,18 +4,18 @@ import type { BehaviorTrackerOptions, BehaviorSnapshot } from './behavioral/trac
 import { setBehaviorSnapshot } from './collectors/behavior_snapshot'
 import { collectors } from './collectors'
 import type { DetectionResult } from './detectors/types'
-import type { ScoringOptions } from './detectors/scoring'
 import type {
   BehaviorResult,
   BotDetectorInterface,
   CollectorDict,
+  DetectOptions,
   LoadOptions,
 } from './types'
 
-export default class BotDetector implements BotDetectorInterface {
+export class BotDetector implements BotDetectorInterface {
   private collections: CollectorDict | undefined = undefined
   private detections: DetectionResult | undefined = undefined
-  private scoringOptions: ScoringOptions | undefined
+  private scoringOptions: DetectOptions | undefined
   private behaviorTracker: BehaviorTracker | undefined
   private behaviorOptions: BehaviorTrackerOptions | undefined
   private monitoring: boolean
@@ -26,7 +26,7 @@ export default class BotDetector implements BotDetectorInterface {
     this.monitoring = options?.monitoring ?? false
   }
 
-  public async detect(options?: ScoringOptions): Promise<DetectionResult> {
+  public async detect(options?: DetectOptions): Promise<DetectionResult> {
     if (this.collections === undefined) {
       await this.collect()
     }
@@ -42,7 +42,7 @@ export default class BotDetector implements BotDetectorInterface {
     return this.detections
   }
 
-  public async collect() {
+  public async collect(): Promise<CollectorDict> {
     this.collections = await collect(collectors)
     return this.collections
   }
@@ -97,11 +97,11 @@ export default class BotDetector implements BotDetectorInterface {
     this.detections = undefined
   }
 
-  public getCollections() {
+  public getCollections(): CollectorDict | undefined {
     return this.collections
   }
 
-  public getDetections() {
+  public getDetections(): DetectionResult | undefined {
     return this.detections
   }
 

@@ -33,6 +33,10 @@ export type CollectorDict<T extends AbstractSourceDict = DefaultCollectorDict> =
   [K in keyof T]: Component<SourceResponse<T[K]>>
 }
 
+export interface DetectOptions extends ScoringOptions {
+  debug?: boolean
+}
+
 export interface LoadOptions {
   scoring?: ScoringOptions
   behavior?: BehaviorTrackerOptions
@@ -47,11 +51,13 @@ export interface BehaviorResult {
 }
 
 export interface BotDetectorInterface {
-  detect(options?: ScoringOptions): Promise<DetectionResult>
+  detect(options?: DetectOptions): Promise<DetectionResult>
   collect(): Promise<CollectorDict>
   getBehaviorScore(): BehaviorResult
   startBehaviorTracking(): void
   stopBehaviorTracking(): void
   getFingerprint(): string
   destroy(): void
+  getCollections(): CollectorDict | undefined
+  getDetections(): DetectionResult | undefined
 }

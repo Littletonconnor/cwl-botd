@@ -18,7 +18,7 @@ Analysis of the following libraries and approaches informed this plan:
 
 ## Current State
 
-Phase 1 complete (CI deferred to Phase 8), Phase 2 complete, Phase 3 complete, Phase 4 complete. 17 collectors working (added behaviorSnapshot collector). Build pipeline (tsup, ESM+CJS+UMD). Test framework (vitest + jsdom). BehaviorTracker class with circular buffer, time-windowed accumulation, start/stop/reset lifecycle. Core detection engine: DetectorRegistry, 19 automation detectors, tool-specific detectors, 6 browser environment detectors, 5 lie detection detectors, 7 fingerprint/consistency detectors, 4 behavioral detectors (mouse movement, keyboard, scroll, interaction timing), weighted scoring engine. 146 tests passing. Good monorepo foundation (Turborepo, pnpm, TypeScript strict, ESLint).
+Phase 1 complete (CI deferred to Phase 8), Phase 2 complete, Phase 3 complete, Phase 4 complete, Phase 5.1 complete. 17 collectors working (added behaviorSnapshot collector). Build pipeline (tsup, ESM+CJS+UMD). Test framework (vitest + jsdom). BehaviorTracker class with circular buffer, time-windowed accumulation, start/stop/reset lifecycle. Core detection engine: DetectorRegistry, 19 automation detectors, tool-specific detectors, 6 browser environment detectors, 5 lie detection detectors, 7 fingerprint/consistency detectors, 4 behavioral detectors (mouse movement, keyboard, scroll, interaction timing), weighted scoring engine. Refined public API: load(), BotDetector class with full lifecycle methods, DetectOptions, createDefaultRegistry for power users, clean type exports. 166 tests passing. Good monorepo foundation (Turborepo, pnpm, TypeScript strict, ESLint).
 
 ---
 
@@ -242,9 +242,9 @@ Phase 1 complete (CI deferred to Phase 8), Phase 2 complete, Phase 3 complete, P
 
 ## Phase 5: API Refinement & Developer Experience
 
-> **Priority: HIGH** — Enterprise adoption depends on great DX.
+> **Priority: HIGH** — Enterprise adoption depends on great DX (1 of 5 tasks complete).
 
-- [ ] **5.1 Refine public API surface**
+- [x] **5.1 Refine public API surface**
   - `load(options?) => Promise<BotDetector>`
   - `detector.detect(options?) => Promise<DetectionResult>`
   - `detector.collect() => Promise<CollectorData>`
