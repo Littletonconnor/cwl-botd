@@ -1,7 +1,6 @@
 import { collectors } from './collectors'
 import type { DetectionResult } from './detectors/types'
 import type { ScoringOptions } from './detectors/scoring'
-import type { BotDetectionConfig } from './config'
 
 export const State = {
   Success: 'Success',
@@ -36,8 +35,6 @@ export type CollectorDict<T extends AbstractSourceDict = DefaultCollectorDict> =
 export interface DetectOptions extends ScoringOptions {
   debug?: boolean
 }
-
-export type LoadOptions = BotDetectionConfig
 
 export interface BehaviorResult {
   bot: boolean

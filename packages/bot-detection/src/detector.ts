@@ -3,14 +3,13 @@ import { BehaviorTracker } from './behavioral'
 import type { BehaviorTrackerOptions, BehaviorSnapshot } from './behavioral/tracker'
 import { setBehaviorSnapshot } from './collectors/behavior_snapshot'
 import { collectors } from './collectors'
-import { resolveFilters, filterByName, type ResolvedFilters } from './config'
+import { resolveFilters, filterByName, type BotDetectionConfig, type ResolvedFilters } from './config'
 import type { DetectionResult } from './detectors/types'
 import type {
   BehaviorResult,
   BotDetectorInterface,
   CollectorDict,
   DetectOptions,
-  LoadOptions,
 } from './types'
 
 export class BotDetector implements BotDetectorInterface {
@@ -20,10 +19,10 @@ export class BotDetector implements BotDetectorInterface {
   private behaviorTracker: BehaviorTracker | undefined
   private behaviorOptions: BehaviorTrackerOptions | undefined
   private monitoring: boolean
-  private config: LoadOptions
+  private config: BotDetectionConfig
   private filters: ResolvedFilters
 
-  constructor(options?: LoadOptions) {
+  constructor(options?: BotDetectionConfig) {
     this.config = options ?? {}
     this.scoringOptions = options?.scoring
     this.behaviorOptions = options?.behavior
