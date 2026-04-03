@@ -1,11 +1,14 @@
-import { collect, detect } from './api'
+import { collect } from './api'
 import { BehaviorTracker } from './behavioral'
 import type { BehaviorTrackerOptions, BehaviorSnapshot } from './behavioral/tracker'
 import { setBehaviorSnapshot } from './collectors/behavior_snapshot'
 import { collectors } from './collectors'
 import { resolveFilters, filterByName, type BotDetectionConfig, type ResolvedFilters } from './config'
 import { DebugLogger, type DebugReport } from './debug'
+import { createDefaultRegistry, score } from './detectors'
+import { DetectorRegistry } from './detectors/registry'
 import type { DetectionResult } from './detectors/types'
+import type { Plugin, CollectorFn } from './plugin'
 import type {
   BehaviorResult,
   BotDetectorInterface,
@@ -24,6 +27,9 @@ export class BotDetector implements BotDetectorInterface {
   private filters: ResolvedFilters
   private debugLogger: DebugLogger | undefined
   private lastDebugReport: DebugReport | undefined
+  private registry: DetectorRegistry
+  private pluginCollectors: Record<string, CollectorFn> = {}
+  private plugins: Plugin[] = []
 
   constructor(options?: BotDetectionConfig) {
     this.config = options ?? {}
@@ -31,6 +37,7 @@ export class BotDetector implements BotDetectorInterface {
     this.behaviorOptions = options?.behavior
     this.monitoring = options?.monitoring ?? false
     this.filters = resolveFilters(this.config)
+    this.registry = createDefaultRegistry()
     if (this.config.debug) {
       this.debugLogger = new DebugLogger()
     }
@@ -70,7 +77,8 @@ export class BotDetector implements BotDetectorInterface {
     }
 
     const opts = options ?? this.scoringOptions
-    this.detections = detect(this.collections!, opts, detectorFilter, logger)
+    const signals = this.registry.run(this.collections!, detectorFilter, logger)
+    this.detections = score(signals, opts, logger)
 
     if (logger) {
       this.lastDebugReport = logger.buildReport({
@@ -97,9 +105,26 @@ export class BotDetector implements BotDetectorInterface {
     return this.collections
   }
 
+  public async use(plugin: Plugin): Promise<void> {
+    this.plugins.push(plugin)
+
+    if (plugin.init) {
+      await plugin.init()
+    }
+
+    if (plugin.detectors) {
+      this.registry.registerAll(plugin.detectors)
+    }
+
+    if (plugin.collectors) {
+      Object.assign(this.pluginCollectors, plugin.collectors)
+    }
+  }
+
   private getFilteredCollectors() {
+    const merged = { ...collectors, ...this.pluginCollectors }
     return filterByName(
-      collectors,
+      merged,
       this.config.collectors,
       this.filters.disabledCollectors,
     )

@@ -46,6 +46,7 @@ export interface BehaviorResult {
 export interface BotDetectorInterface {
   detect(options?: DetectOptions): Promise<DetectionResult>
   collect(): Promise<CollectorDict>
+  use(plugin: import('./plugin').Plugin): Promise<void>
   getBehaviorScore(): BehaviorResult
   startBehaviorTracking(): void
   stopBehaviorTracking(): void
