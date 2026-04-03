@@ -173,3 +173,49 @@ Turborepo manages task dependencies and caching:
 - `base.json` - Base TypeScript configuration
 - `nextjs.json` - Next.js specific settings
 - `react-library.json` - React library configuration
+
+## How to Build
+
+```bash
+# Build all apps and packages from the root
+pnpm build
+
+# Build a specific app
+turbo run build --filter=web
+
+# Build from the app directory
+cd apps/web && pnpm build
+```
+
+## How to Run
+
+```bash
+# Start all dev servers (from root)
+pnpm dev
+
+# Start a specific app
+turbo run dev --filter=web
+
+# Start from the app directory (port 3000 with Turbopack)
+cd apps/web && pnpm dev
+
+# Start a production server (after building)
+cd apps/web && pnpm start
+```
+
+## How to Test
+
+```bash
+# Run linting across all packages
+pnpm lint
+
+# Run type checking across all packages
+pnpm check-types
+
+# Format code
+pnpm format
+```
+
+## Code Style
+
+- **No verbose comments.** Do not add unnecessary, obvious, or redundant comments throughout the codebase. Code should be self-explanatory. Only add comments where the logic is non-obvious or requires clarification for future maintainers.
