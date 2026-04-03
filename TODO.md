@@ -18,7 +18,7 @@ Analysis of the following libraries and approaches informed this plan:
 
 ## Current State
 
-Phase 1 complete (CI deferred to Phase 8), Phase 2 complete, Phase 3 complete, Phase 4 complete, Phase 5.1 complete, Phase 5.2 complete. 17 collectors working (added behaviorSnapshot collector). Build pipeline (tsup, ESM+CJS+UMD). Test framework (vitest + jsdom). BehaviorTracker class with circular buffer, time-windowed accumulation, start/stop/reset lifecycle. Core detection engine: DetectorRegistry, 19 automation detectors, tool-specific detectors, 6 browser environment detectors, 5 lie detection detectors, 7 fingerprint/consistency detectors, 4 behavioral detectors (mouse movement, keyboard, scroll, interaction timing), weighted scoring engine. Refined public API: load(), BotDetector class with full lifecycle methods, DetectOptions, createDefaultRegistry for power users, clean type exports. Configuration system with detector/collector enable/disable, privacy mode (disable fingerprinting by technique), performance mode (skip expensive detectors), and combined preset resolution. 191 tests passing. Good monorepo foundation (Turborepo, pnpm, TypeScript strict, ESLint).
+Phase 1 complete (CI deferred to Phase 8), Phase 2 complete, Phase 3 complete, Phase 4 complete, Phase 5.1 complete, Phase 5.2 complete, Phase 5.3 complete. 17 collectors working (added behaviorSnapshot collector). Build pipeline (tsup, ESM+CJS+UMD). Test framework (vitest + jsdom). BehaviorTracker class with circular buffer, time-windowed accumulation, start/stop/reset lifecycle. Core detection engine: DetectorRegistry, 19 automation detectors, tool-specific detectors, 6 browser environment detectors, 5 lie detection detectors, 7 fingerprint/consistency detectors, 4 behavioral detectors (mouse movement, keyboard, scroll, interaction timing), weighted scoring engine. Refined public API: load(), BotDetector class with full lifecycle methods, DetectOptions, createDefaultRegistry for power users, clean type exports. Configuration system with detector/collector enable/disable, privacy mode (disable fingerprinting by technique), performance mode (skip expensive detectors), and combined preset resolution. Debug/telemetry mode with DebugLogger: per-operation timing for collectors/detectors/scoring, structured log entries, DebugReport export via getDebugReport() and exportDebugJSON(). 211 tests passing. Good monorepo foundation (Turborepo, pnpm, TypeScript strict, ESLint).
 
 ---
 
@@ -242,7 +242,7 @@ Phase 1 complete (CI deferred to Phase 8), Phase 2 complete, Phase 3 complete, P
 
 ## Phase 5: API Refinement & Developer Experience
 
-> **Priority: HIGH** — Enterprise adoption depends on great DX (1 of 5 tasks complete).
+> **Priority: HIGH** — Enterprise adoption depends on great DX (3 of 5 tasks complete).
 
 - [x] **5.1 Refine public API surface**
   - `load(options?) => Promise<BotDetector>`
@@ -263,13 +263,17 @@ Phase 1 complete (CI deferred to Phase 8), Phase 2 complete, Phase 3 complete, P
   - Debug mode toggle
   - TypeScript: full generic config type with IntelliSense
 
-- [ ] **5.3 Implement debug/telemetry mode**
-  - Structured logging with levels: `debug`, `info`, `warn`, `error`
-  - Log each collector result and timing
-  - Log each detector evaluation and scoring
-  - Visual debug panel option (injectable DOM overlay)
-  - Export debug report as JSON
-  - Performance timing for each detection phase
+- [x] **5.3 Implement debug/telemetry mode**
+  - DebugLogger class with structured log entries (phase, source, message, data, duration)
+  - Per-collector timing and state/value/error capture (CollectorDebugInfo)
+  - Per-detector timing with category, score, reason, botKind (DetectorDebugInfo)
+  - Scoring telemetry: threshold, weights, normalized score, confidence (ScoringDebugInfo)
+  - DebugReport aggregation with signal summary, config snapshot, and full log
+  - Enable via `debug: true` in config or per-call `detect({ debug: true })`
+  - `getDebugReport()` returns structured DebugReport object
+  - `exportDebugJSON()` returns formatted JSON string for export
+  - Performance timing for each detection phase (totalDuration in report)
+  - [ ] Visual debug panel option (injectable DOM overlay) — deferred to Phase 7
 
 - [ ] **5.4 Implement plugin system**
   - `defineDetector()` helper for custom detectors

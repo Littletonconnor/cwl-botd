@@ -4,6 +4,7 @@ import type { BehaviorTrackerOptions, BehaviorSnapshot } from './behavioral/trac
 import { setBehaviorSnapshot } from './collectors/behavior_snapshot'
 import { collectors } from './collectors'
 import { resolveFilters, filterByName, type BotDetectionConfig, type ResolvedFilters } from './config'
+import { DebugLogger, type DebugReport } from './debug'
 import type { DetectionResult } from './detectors/types'
 import type {
   BehaviorResult,
@@ -21,6 +22,8 @@ export class BotDetector implements BotDetectorInterface {
   private monitoring: boolean
   private config: BotDetectionConfig
   private filters: ResolvedFilters
+  private debugLogger: DebugLogger | undefined
+  private lastDebugReport: DebugReport | undefined
 
   constructor(options?: BotDetectionConfig) {
     this.config = options ?? {}
@@ -28,9 +31,19 @@ export class BotDetector implements BotDetectorInterface {
     this.behaviorOptions = options?.behavior
     this.monitoring = options?.monitoring ?? false
     this.filters = resolveFilters(this.config)
+    if (this.config.debug) {
+      this.debugLogger = new DebugLogger()
+    }
   }
 
   public async detect(options?: DetectOptions): Promise<DetectionResult> {
+    const useDebug = this.config.debug || options?.debug
+    if (useDebug && !this.debugLogger) {
+      this.debugLogger = new DebugLogger()
+    }
+    const logger = useDebug ? this.debugLogger : undefined
+    logger?.start()
+
     if (this.collections === undefined) {
       await this.collect()
     }
@@ -38,7 +51,14 @@ export class BotDetector implements BotDetectorInterface {
     if (this.behaviorTracker?.isRunning()) {
       const snapshot = this.behaviorTracker.snapshot()
       setBehaviorSnapshot(snapshot)
-      this.collections = await collect(this.getFilteredCollectors())
+      logger?.log('behavior', 'tracker', 'captured behavior snapshot', {
+        mouse: snapshot.mouse.length,
+        clicks: snapshot.clicks.length,
+        keys: snapshot.keys.length,
+        scrolls: snapshot.scrolls.length,
+        duration: snapshot.duration,
+      })
+      this.collections = await collect(this.getFilteredCollectors(), logger)
     }
 
     const detectorFilter = {
@@ -50,12 +70,30 @@ export class BotDetector implements BotDetectorInterface {
     }
 
     const opts = options ?? this.scoringOptions
-    this.detections = detect(this.collections!, opts, detectorFilter)
+    this.detections = detect(this.collections!, opts, detectorFilter, logger)
+
+    if (logger) {
+      this.lastDebugReport = logger.buildReport({
+        disabledCollectors: [...this.filters.disabledCollectors],
+        disabledDetectors: [...this.filters.disabledDetectors],
+        privacy: {
+          disableFingerprinting: this.config.privacy?.disableFingerprinting ?? false,
+          disableCanvas: this.config.privacy?.disableCanvas ?? false,
+          disableWebGL: this.config.privacy?.disableWebGL ?? false,
+          disableAudio: this.config.privacy?.disableAudio ?? false,
+          disableFonts: this.config.privacy?.disableFonts ?? false,
+        },
+        performance: {
+          skipExpensive: this.config.performance?.skipExpensive ?? false,
+        },
+      })
+    }
+
     return this.detections
   }
 
   public async collect(): Promise<CollectorDict> {
-    this.collections = await collect(this.getFilteredCollectors())
+    this.collections = await collect(this.getFilteredCollectors(), this.debugLogger)
     return this.collections
   }
 
@@ -108,6 +146,15 @@ export class BotDetector implements BotDetectorInterface {
     return simpleHash(JSON.stringify(stable))
   }
 
+  public getDebugReport(): DebugReport | undefined {
+    return this.lastDebugReport
+  }
+
+  public exportDebugJSON(): string {
+    if (!this.lastDebugReport) return '{}'
+    return JSON.stringify(this.lastDebugReport, null, 2)
+  }
+
   public destroy(): void {
     if (this.behaviorTracker) {
       this.behaviorTracker.reset()
@@ -115,6 +162,9 @@ export class BotDetector implements BotDetectorInterface {
     }
     this.collections = undefined
     this.detections = undefined
+    this.debugLogger?.reset()
+    this.debugLogger = undefined
+    this.lastDebugReport = undefined
   }
 
   public getCollections(): CollectorDict | undefined {

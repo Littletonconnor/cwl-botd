@@ -1,3 +1,4 @@
+import type { DebugLogger } from '../debug'
 import type { CollectorDict } from '../types'
 import type { Detector, Signal } from './types'
 
@@ -19,7 +20,7 @@ export class DetectorRegistry {
     }
   }
 
-  run(data: CollectorDict, options?: RegistryRunOptions): Signal[] {
+  run(data: CollectorDict, options?: RegistryRunOptions, debugLogger?: DebugLogger): Signal[] {
     const signals: Signal[] = []
     const enabledSet = options?.enabled ? new Set(options.enabled) : null
     const disabledSet = options?.disabled ? new Set(options.disabled) : null
@@ -28,14 +29,44 @@ export class DetectorRegistry {
       if (enabledSet && !enabledSet.has(detector.name)) continue
       if (disabledSet?.has(detector.name)) continue
 
+      const start = debugLogger ? performance.now() : 0
       try {
-        signals.push(detector.detect(data))
+        const signal = detector.detect(data)
+        signals.push(signal)
+
+        if (debugLogger) {
+          const duration = performance.now() - start
+          debugLogger.addDetectorResult({
+            name: detector.name,
+            category: detector.category,
+            detected: signal.detected,
+            score: signal.score,
+            reason: signal.reason,
+            botKind: signal.botKind,
+            duration,
+          })
+          debugLogger.log('detect', detector.name, signal.reason, { detected: signal.detected, score: signal.score }, duration)
+        }
       } catch {
-        signals.push({
+        const signal = {
           detected: false,
           score: 0,
           reason: `${detector.name}: detector threw an error`,
-        })
+        }
+        signals.push(signal)
+
+        if (debugLogger) {
+          const duration = performance.now() - start
+          debugLogger.addDetectorResult({
+            name: detector.name,
+            category: detector.category,
+            detected: false,
+            score: 0,
+            reason: signal.reason,
+            duration,
+          })
+          debugLogger.log('detect', detector.name, 'detector threw an error', undefined, duration)
+        }
       }
     }
 
