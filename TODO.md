@@ -18,7 +18,7 @@ Analysis of the following libraries and approaches informed this plan:
 
 ## Current State
 
-~55% of Phase 1-2 complete. 12 collectors exist and working. Build pipeline added (tsup, ESM+CJS+UMD). Test framework set up (vitest + jsdom). Behavioral collectors (mouse, click, scroll) fixed — sync/async bug resolved, SSR guards and listener cleanup added. Core detection engine implemented: Detector interface, DetectorRegistry, 19 automation artifact detectors, tool-specific detectors (Selenium, Puppeteer, Playwright, PhantomJS, Nightmare/Electron), and weighted scoring engine with configurable thresholds. 38 tests covering detectors, registry, scoring, and end-to-end pipeline. Good monorepo foundation (Turborepo, pnpm, TypeScript strict, ESLint).
+Phase 1 nearly done (CI pending), Phase 2 complete. 12 collectors working. Build pipeline (tsup, ESM+CJS+UMD). Test framework (vitest + jsdom). Behavioral collectors fixed. Core detection engine: DetectorRegistry, 19 automation detectors, tool-specific detectors, 6 browser environment detectors (eval/engine consistency, error stack analysis, native function checks, performance.now precision, clock skew, screen consistency), 5 lie detection detectors (prototype chain, Proxy detection, toString inconsistency, property descriptors, cross-attribute consistency), weighted scoring engine. 89 tests passing. Good monorepo foundation (Turborepo, pnpm, TypeScript strict, ESLint).
 
 ---
 
@@ -57,7 +57,7 @@ Analysis of the following libraries and approaches informed this plan:
 
 ## Phase 2: Core Detection Engine
 
-> **Priority: CRITICAL** — This is the heart of the library (4 of 6 tasks complete).
+> **Priority: CRITICAL** — This is the heart of the library (6 of 6 tasks complete).
 
 - [x] **2.1 Design detector interface and registry**
   - Define `Detector` interface: `{ name, category, detect(data) => Signal }`
@@ -107,7 +107,7 @@ Analysis of the following libraries and approaches informed this plan:
     - `window.__nightmare`, `process.versions.electron`
     - `window.require` presence in browser context
 
-- [ ] **2.4 Implement browser environment detectors**
+- [x] **2.4 Implement browser environment detectors**
   - `eval.toString().length` cross-referenced with browser engine
   - Error stack trace format analysis (engine-specific patterns)
   - `Function.prototype.toString` native code check
@@ -118,7 +118,7 @@ Analysis of the following libraries and approaches informed this plan:
   - `Date.now()` vs `performance.now()` clock skew
   - Screen dimensions vs window dimensions consistency
 
-- [ ] **2.5 Implement CreepJS-style lie detection system**
+- [x] **2.5 Implement CreepJS-style lie detection system**
   - Prototype chain analysis: verify native functions return `"function [name]() { [native code] }"`
   - ES6 Proxy wrapper detection on native objects
   - `.toString()` vs `Function.prototype.toString.call()` inconsistency check
