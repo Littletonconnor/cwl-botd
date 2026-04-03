@@ -1,5 +1,5 @@
 import { collectors } from './collectors'
-import { detectors } from './detectors'
+import type { DetectionResult } from './detectors/types'
 
 export const State = {
   Success: 'Success',
@@ -16,13 +16,11 @@ export type Component<T> =
       value: T
     }
   | {
-      state: StateValue
+      state: Exclude<StateValue, typeof State.Success>
       error: string
     }
 
 export type DefaultCollectorDict = typeof collectors
-
-export type DefaultDetectorDict = typeof detectors
 
 export type SourceResponse<T> = T extends (...args: any[]) => any ? Awaited<ReturnType<T>> : T
 
@@ -33,16 +31,7 @@ export type CollectorDict<T extends AbstractSourceDict = DefaultCollectorDict> =
   [K in keyof T]: Component<SourceResponse<T[K]>>
 }
 
-export type DetectionDict = any
-
 export interface BotDetectorInterface {
-  /**
-   * Performs bot detection. Must be called after collect()
-   */
-  detect(): any
-
-  /**
-   * Collects data from sources.
-   */
-  collect(): any
+  detect(): DetectionResult
+  collect(): Promise<CollectorDict>
 }
