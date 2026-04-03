@@ -1,7 +1,7 @@
-import BotDetector from './detector'
+import { BotDetector } from './detector'
 import type { LoadOptions } from './types'
 
-async function load(options?: LoadOptions) {
+async function load(options?: LoadOptions): Promise<BotDetector> {
   const detector = new BotDetector(options)
   await detector.collect()
 
@@ -14,7 +14,14 @@ async function load(options?: LoadOptions) {
 
 export { load }
 export { BotDetector }
-export { DetectorRegistry, BotKind, DetectorCategory, score } from './detectors'
+
+export {
+  DetectorRegistry,
+  BotKind,
+  DetectorCategory,
+  score,
+  createDefaultRegistry,
+} from './detectors'
 export type {
   BotKindValue,
   Detector,
@@ -22,8 +29,19 @@ export type {
   DetectorCategoryValue,
   Signal,
 } from './detectors'
+
 export type { ScoringOptions } from './detectors/scoring'
-export type { LoadOptions, BehaviorResult } from './types'
+
+export type {
+  LoadOptions,
+  DetectOptions,
+  BehaviorResult,
+  CollectorDict,
+  Component,
+  StateValue,
+} from './types'
+export { State } from './types'
+
 export { BehaviorTracker } from './behavioral'
 export type {
   BehaviorSnapshot,
@@ -33,4 +51,3 @@ export type {
   KeyEvent_,
   ScrollEvent_,
 } from './behavioral'
-export { setBehaviorSnapshot } from './collectors/behavior_snapshot'
