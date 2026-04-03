@@ -20,6 +20,17 @@ const DEFAULT_WEIGHTS: Record<string, number> = {
   appVersion: 0.7,
   webgl: 0.8,
   windowExternal: 0.9,
+  evalEngineConsistency: 0.7,
+  errorStackEngine: 0.8,
+  nativeFunction: 0.7,
+  performancePrecision: 0.5,
+  clockSkew: 0.5,
+  screenConsistency: 0.6,
+  prototypeChain: 0.8,
+  proxyDetection: 0.9,
+  tostringInconsistency: 0.8,
+  propertyDescriptor: 0.8,
+  crossAttribute: 0.7,
 }
 
 const DEFAULT_THRESHOLD = 0.4

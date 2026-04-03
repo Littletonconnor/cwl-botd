@@ -26,7 +26,6 @@ const detector: Detector = {
         }
       }
     } catch {
-      // Some environments throw on toString
     }
 
     return { detected: false, score: 0, reason: 'windowExternal: appears normal' }

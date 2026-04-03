@@ -1,4 +1,6 @@
 import { automationDetectors } from './automation'
+import { environmentDetectors } from './environment'
+import { lieDetectors } from './lie_detection'
 import { DetectorRegistry } from './registry'
 
 export { DetectorRegistry } from './registry'
@@ -16,5 +18,7 @@ export type {
 export function createDefaultRegistry(): DetectorRegistry {
   const registry = new DetectorRegistry()
   registry.registerAll(automationDetectors)
+  registry.registerAll(environmentDetectors)
+  registry.registerAll(lieDetectors)
   return registry
 }
