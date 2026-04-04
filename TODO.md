@@ -18,7 +18,7 @@ Analysis of the following libraries and approaches informed this plan:
 
 ## Current State
 
-Phase 1 complete (CI deferred to Phase 8), Phase 2 complete, Phase 3 complete, Phase 4 complete, Phase 5 complete, Phase 6.2 in progress. 17 collectors working (added behaviorSnapshot collector). Build pipeline (tsup, ESM+CJS+UMD). Test framework (vitest + jsdom). BehaviorTracker class with circular buffer, time-windowed accumulation, start/stop/reset lifecycle. Core detection engine: DetectorRegistry, 19 automation detectors, tool-specific detectors, 6 browser environment detectors, 5 lie detection detectors, 7 fingerprint/consistency detectors, 4 behavioral detectors (mouse movement, keyboard, scroll, interaction timing), weighted scoring engine. Refined public API: load(), BotDetector class with full lifecycle methods, DetectOptions, createDefaultRegistry for power users, clean type exports. Configuration system with detector/collector enable/disable, privacy mode (disable fingerprinting by technique), performance mode (skip expensive detectors), and combined preset resolution. Debug/telemetry mode with DebugLogger: per-operation timing for collectors/detectors/scoring, structured log entries, DebugReport export via getDebugReport() and exportDebugJSON(). Plugin system: defineDetector(), defineCollector(), definePlugin() helpers, BotDetector.use(plugin) registration, built-in honeypot and cookieless browsing plugins. Framework integration packages: @cwl-botd/bot-detection-react (BotDetectionProvider, useBotDetection hook, context) and @cwl-botd/bot-detection-next (middleware with bot score headers/cookies, useNextBotDetection client hook with server sync, re-exports React primitives). 297 tests passing (comprehensive detector unit tests added for all 50 detectors, known bot/human profile integration tests, edge cases). Good monorepo foundation (Turborepo, pnpm, TypeScript strict, ESLint).
+Phase 1 complete (CI deferred to Phase 8), Phase 2 complete, Phase 3 complete, Phase 4 complete, Phase 5 complete, Phase 6.2 complete, Phase 6.3 complete. 17 collectors working (added behaviorSnapshot collector). Build pipeline (tsup, ESM+CJS+UMD). Test framework (vitest + jsdom). BehaviorTracker class with circular buffer, time-windowed accumulation, start/stop/reset lifecycle. Core detection engine: DetectorRegistry, 19 automation detectors, tool-specific detectors, 6 browser environment detectors, 5 lie detection detectors, 7 fingerprint/consistency detectors, 4 behavioral detectors (mouse movement, keyboard, scroll, interaction timing), weighted scoring engine. Refined public API: load(), BotDetector class with full lifecycle methods, DetectOptions, createDefaultRegistry for power users, clean type exports. Configuration system with detector/collector enable/disable, privacy mode (disable fingerprinting by technique), performance mode (skip expensive detectors), and combined preset resolution. Debug/telemetry mode with DebugLogger: per-operation timing for collectors/detectors/scoring, structured log entries, DebugReport export via getDebugReport() and exportDebugJSON(). Plugin system: defineDetector(), defineCollector(), definePlugin() helpers, BotDetector.use(plugin) registration, built-in honeypot and cookieless browsing plugins. Framework integration packages: @cwl-botd/bot-detection-react (BotDetectionProvider, useBotDetection hook, context) and @cwl-botd/bot-detection-next (middleware with bot score headers/cookies, useNextBotDetection client hook with server sync, re-exports React primitives). 610 tests passing across 20 test files (comprehensive detector unit tests for all 50 detectors with bot-positive/human-negative/edge cases, scoring engine threshold/normalization/confidence/BotKind/debug logger tests, known bot/human profile integration tests). Good monorepo foundation (Turborepo, pnpm, TypeScript strict, ESLint).
 
 ---
 
@@ -300,13 +300,13 @@ Phase 1 complete (CI deferred to Phase 8), Phase 2 complete, Phase 3 complete, P
   - Test SSR safety (no window/document)
   - Aim for >90% coverage on collectors
 
-- [ ] **6.2 Unit tests for all detectors**
+- [x] **6.2 Unit tests for all detectors**
   - Test each detector with known bot fingerprints
   - Test each detector with known human fingerprints
   - Test edge cases: old browsers, privacy extensions, mobile
   - Test scoring accuracy with combined signals
 
-- [ ] **6.3 Unit tests for scoring engine**
+- [x] **6.3 Unit tests for scoring engine**
   - Test threshold classification accuracy
   - Test custom weight configurations
   - Test edge cases near threshold boundaries
