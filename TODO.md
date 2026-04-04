@@ -344,6 +344,16 @@ Phase 1 complete (CI deferred to Phase 8), Phase 2 complete, Phase 3 complete, P
 
 > **Priority: MEDIUM-HIGH** — Important for adoption and showcasing capabilities. Complete before CI/packaging.
 
+- [ ] **6.7 Fix `performancePrecision` detector false positives**
+  - The detector still flags real browsers. `performance.now()` rounding due to Spectre mitigations (100μs–1ms) means synchronous CPU-burn loops can still produce identical timestamps.
+  - Current approach: two timestamps separated by 500K `Math.sin()` calls (~5ms). Checks if `elapsed === 0`. Still triggers on some browsers.
+  - Options to investigate:
+    - Use `requestAnimationFrame` or `setTimeout` for async delay between samples (guaranteed real time gap, but makes detect() async-only)
+    - Collect timing data in the behavior tracker over time instead of synchronously
+    - Combine with other signals — only flag if `performancePrecision` AND another inconsistency signal both fire
+    - Lower the weight further or remove from default detector set, make it opt-in
+  - Must verify fix against: Chrome (macOS/Windows), Firefox, Safari, headless Chromium, Puppeteer, Playwright
+
 - [ ] **7.1 Build interactive demo dashboard**
   - Use **ui.sh** scale design system for consistent, polished UI components
   - Use **UIPicker** for interactive component selection and configuration
