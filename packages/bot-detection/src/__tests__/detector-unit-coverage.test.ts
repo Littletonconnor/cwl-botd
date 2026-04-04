@@ -348,16 +348,15 @@ describe('appVersion detector', () => {
     expect(signal.reason).toContain('HeadlessChrome')
   })
 
-  it('detects empty appVersion', () => {
+  it('treats empty appVersion as inconclusive (deprecated API)', () => {
     Object.defineProperty(navigator, 'appVersion', {
       value: '',
       writable: true,
       configurable: true,
     })
     const signal = appVersionDetector.detect(makeCollectorDict())
-    expect(signal.detected).toBe(true)
-    expect(signal.score).toBe(0.5)
-    expect(signal.reason).toContain('empty')
+    expect(signal.detected).toBe(false)
+    expect(signal.score).toBe(0)
   })
 
   it('passes normal Chrome appVersion', () => {

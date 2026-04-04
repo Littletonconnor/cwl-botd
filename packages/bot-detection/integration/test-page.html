@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Bot Detection Integration Test</title>
+</head>
+<body>
+  <div id="status">loading</div>
+  <pre id="result"></pre>
+  <script src="/bot-detection.umd.global.js"></script>
+  <script>
+    (async function run() {
+      try {
+        const detector = await BotDetection.load({ debug: true });
+        const result = await detector.detect();
+        const debugReport = detector.getDebugReport
+          ? detector.getDebugReport()
+          : null;
+
+        window.__DETECTION_RESULT__ = result;
+        window.__DEBUG_REPORT__ = debugReport;
+
+        document.getElementById('result').textContent = JSON.stringify(result, null, 2);
+        document.getElementById('status').textContent = 'done';
+      } catch (err) {
+        window.__DETECTION_ERROR__ = err.message;
+        document.getElementById('status').textContent = 'error';
+        document.getElementById('result').textContent = err.message;
+      }
+    })();
+  </script>
+</body>
+</html>

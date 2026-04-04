@@ -21,11 +21,16 @@ const detector: Detector = {
     const ua = uaComponent.value
     const isChromeSafariOpera = /Chrome|Safari|Opera/i.test(ua)
 
-    if (isChromeSafariOpera && navigator.productSub !== EXPECTED_PRODUCT_SUB) {
+    const productSub = navigator.productSub
+    if (productSub === undefined || productSub === null) {
+      return { detected: false, score: 0, reason: 'productSub: API not available' }
+    }
+
+    if (isChromeSafariOpera && productSub !== EXPECTED_PRODUCT_SUB) {
       return {
         detected: true,
         score: 0.6,
-        reason: `productSub is "${navigator.productSub}" but expected "${EXPECTED_PRODUCT_SUB}" for Chrome/Safari/Opera`,
+        reason: `productSub is "${productSub}" but expected "${EXPECTED_PRODUCT_SUB}" for Chrome/Safari/Opera`,
       }
     }
 

@@ -25,7 +25,11 @@ const detector: Detector = {
       anomalies.push('font enumeration appears blocked (zero fonts detected)')
     }
 
-    if (!blocked) {
+    const uaComponent = data.userAgent
+    const isMobile = uaComponent.state === State.Success &&
+      /Mobile|Android|iPhone|iPad/i.test(String(uaComponent.value))
+
+    if (!blocked && !isMobile) {
       const platformComponent = data.platform
       if (platformComponent.state === State.Success) {
         const platform = String(platformComponent.value)
@@ -41,8 +45,9 @@ const detector: Detector = {
         }
       }
     }
+    const minFontCount = isMobile ? 1 : 3
 
-    if (count > 0 && count <= 2) {
+    if (count > 0 && count < minFontCount) {
       anomalies.push(`suspiciously low font count: ${count}`)
     }
 

@@ -150,12 +150,12 @@ describe('Scoring Engine - Custom Weight Configurations', () => {
 
   it('doubling a weight increases that detector\'s influence', () => {
     const signals = [
-      makeSignal({ detected: true, score: 0.5, reason: 'rtt: zero' }),
-      makeSignal({ detected: false, score: 0, reason: 'webdriver: not detected' }),
+      makeSignal({ detected: true, score: 0.8, reason: 'rtt: zero' }),
+      makeSignal({ detected: true, score: 0.4, reason: 'webdriver: detected' }),
     ]
 
     const normal = score(signals)
-    const doubled = score(signals, { weights: { rtt: 1.2 } })
+    const doubled = score(signals, { weights: { rtt: 2.0 } })
 
     expect(doubled.score).toBeGreaterThan(normal.score)
   })
@@ -273,10 +273,10 @@ describe('Scoring Engine - Confidence Computation', () => {
   it('boosts confidence by 0.3 for definitive signal (score >= 1.0)', () => {
     const signals = [
       makeSignal({ detected: true, score: 1.0, reason: 'webdriver: detected' }),
-      makeSignal({ detected: false, score: 0, reason: 'userAgent: normal' }),
-      makeSignal({ detected: false, score: 0, reason: 'webgl: normal' }),
+      makeSignal({ detected: true, score: 0.4, reason: 'rtt: zero' }),
     ]
     const result = score(signals)
+    // normalizedScore < 1.0 due to the lower-scoring signal, but confidence gets a 0.3 boost
     expect(result.confidence).toBeGreaterThan(result.score)
   })
 

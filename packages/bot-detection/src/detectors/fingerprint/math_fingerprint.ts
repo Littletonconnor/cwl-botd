@@ -12,23 +12,35 @@ interface EngineExpectation {
   sin: number
 }
 
-const V8_EXPECTED: EngineExpectation = {
-  acos: 1.4473588658278522,
-  acosh: 709.889355822726,
-  atanh: 18.714973875118524,
-  expm1: 1.718281828459045,
-  cosh: 11.591953275521519,
-  sin: 0.8178819121159085,
-}
+const V8_EXPECTED: EngineExpectation[] = [
+  {
+    acos: 1.4473588658278522,
+    acosh: 709.889355822726,
+    atanh: 18.714973875118524,
+    expm1: 1.718281828459045,
+    cosh: 11.591953275521519,
+    sin: 0.8178819121159085,
+  },
+  {
+    acos: 1.4470237543681796,
+    acosh: 709.889355822726,
+    atanh: 18.714973875118524,
+    expm1: 1.718281828459045,
+    cosh: 11.591953275521519,
+    sin: 0.985600298790633,
+  },
+]
 
-const SPIDERMONKEY_EXPECTED: EngineExpectation = {
-  acos: 1.4473588658278522,
-  acosh: 709.889355822726,
-  atanh: 18.714973875118524,
-  expm1: 1.718281828459045,
-  cosh: 11.591953275521519,
-  sin: 0.8178819121159085,
-}
+const SPIDERMONKEY_EXPECTED: EngineExpectation[] = [
+  {
+    acos: 1.4473588658278522,
+    acosh: 709.889355822726,
+    atanh: 18.714973875118524,
+    expm1: 1.718281828459045,
+    cosh: 11.591953275521519,
+    sin: 0.8178819121159085,
+  },
+]
 
 const TEST_VALUES = {
   acos: 0.123456789,
@@ -76,22 +88,34 @@ const detector: Detector = {
     }
 
     const computed = computeMathValues()
-    const expected = engine === 'v8' ? V8_EXPECTED : SPIDERMONKEY_EXPECTED
+    const knownSets = engine === 'v8' ? V8_EXPECTED : SPIDERMONKEY_EXPECTED
 
-    const mismatches: string[] = []
-    const keys = Object.keys(expected) as (keyof EngineExpectation)[]
+    let bestMismatches: string[] | null = null
+    for (const expected of knownSets) {
+      const mismatches: string[] = []
+      const keys = Object.keys(expected) as (keyof EngineExpectation)[]
 
-    for (const key of keys) {
-      if (computed[key] !== expected[key] && isFinite(expected[key]) && isFinite(computed[key])) {
-        mismatches.push(key)
+      for (const key of keys) {
+        if (computed[key] !== expected[key] && isFinite(expected[key]) && isFinite(computed[key])) {
+          mismatches.push(key)
+        }
+      }
+
+      if (mismatches.length === 0) {
+        bestMismatches = []
+        break
+      }
+
+      if (bestMismatches === null || mismatches.length < bestMismatches.length) {
+        bestMismatches = mismatches
       }
     }
 
-    if (mismatches.length > 0) {
+    if (bestMismatches && bestMismatches.length > 0) {
       return {
         detected: true,
-        score: Math.min(0.4 + mismatches.length * 0.15, 0.8),
-        reason: `Math function mismatch for claimed ${engine} engine: ${mismatches.join(', ')}`,
+        score: Math.min(0.4 + bestMismatches.length * 0.15, 0.8),
+        reason: `Math function mismatch for claimed ${engine} engine: ${bestMismatches.join(', ')}`,
       }
     }
 
