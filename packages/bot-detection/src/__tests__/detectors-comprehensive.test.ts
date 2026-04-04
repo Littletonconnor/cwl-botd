@@ -3,6 +3,7 @@ import { State } from '../types'
 import type { CollectorDict } from '../types'
 import { BotKind } from '../detectors/types'
 import type { Signal } from '../detectors/types'
+import { mockScreen, mockMimeTypes } from './helpers'
 import { DetectorRegistry } from '../detectors/registry'
 import { score } from '../detectors/scoring'
 import { automationDetectors } from '../detectors/automation'
@@ -591,6 +592,8 @@ describe('Known human profiles', () => {
     Object.defineProperty(window, 'outerWidth', { value: 1920, writable: true, configurable: true })
     Object.defineProperty(window, 'outerHeight', { value: 1080, writable: true, configurable: true })
     Object.defineProperty(navigator, 'productSub', { value: '20030107', writable: true, configurable: true })
+    mockScreen(1920, 1080)
+    mockMimeTypes(4)
   })
 
   it('passes normal Chrome on Windows', () => {

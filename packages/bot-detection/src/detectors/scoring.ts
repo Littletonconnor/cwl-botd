@@ -62,7 +62,7 @@ export function score(signals: Signal[], options?: ScoringOptions, debugLogger?:
   let totalWeight = 0
   let weightedScore = 0
 
-  for (const signal of signals) {
+  for (const signal of detectedSignals) {
     const weight = weights[signal.reason.split(':')[0]!] ?? 0.5
     totalWeight += weight
     weightedScore += signal.score * weight

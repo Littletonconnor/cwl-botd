@@ -12,11 +12,7 @@ const detector: Detector = {
 
     const appVersion = navigator.appVersion
     if (!appVersion || appVersion.length === 0) {
-      return {
-        detected: true,
-        score: 0.5,
-        reason: 'navigator.appVersion is empty or missing',
-      }
+      return { detected: false, score: 0, reason: 'appVersion: empty or missing (deprecated API)' }
     }
 
     if (/HeadlessChrome/i.test(appVersion)) {

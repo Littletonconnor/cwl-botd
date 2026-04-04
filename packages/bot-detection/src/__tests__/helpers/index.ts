@@ -9,5 +9,7 @@ export {
   createMockWebGLContext,
   mockCreateElement,
   mockWindowDimensions,
+  mockScreen,
+  mockMimeTypes,
 } from './mock-dom'
 export type { MockWebGLContext, MockCanvasElement } from './mock-dom'

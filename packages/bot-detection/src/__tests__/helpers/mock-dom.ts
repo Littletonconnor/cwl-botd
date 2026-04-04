@@ -52,5 +52,22 @@ function mockWindowDimensions(width: number, height: number): void {
   })
 }
 
-export { createMockWebGLContext, mockCreateElement, mockWindowDimensions }
+function mockScreen(width = 1920, height = 1080): void {
+  Object.defineProperty(screen, 'width', { value: width, writable: true, configurable: true })
+  Object.defineProperty(screen, 'height', { value: height, writable: true, configurable: true })
+  Object.defineProperty(screen, 'availWidth', { value: width, writable: true, configurable: true })
+  Object.defineProperty(screen, 'availHeight', { value: height, writable: true, configurable: true })
+}
+
+function mockMimeTypes(count = 4): void {
+  const mimeTypes = {
+    length: count,
+    item: () => null,
+    namedItem: () => null,
+    [Symbol.iterator]: function* () {},
+  }
+  Object.defineProperty(navigator, 'mimeTypes', { value: mimeTypes, writable: true, configurable: true })
+}
+
+export { createMockWebGLContext, mockCreateElement, mockWindowDimensions, mockScreen, mockMimeTypes }
 export type { MockWebGLContext, MockCanvasElement }

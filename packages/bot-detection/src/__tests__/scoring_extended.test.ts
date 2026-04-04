@@ -90,11 +90,10 @@ describe('Scoring Engine - Extended Coverage', () => {
     it('boosts confidence by 0.3 for definitive signal (score >= 1.0)', () => {
       const signals = [
         makeSignal({ detected: true, score: 1.0, reason: 'webdriver: detected' }),
-        makeSignal({ detected: false, score: 0, reason: 'userAgent: normal' }),
-        makeSignal({ detected: false, score: 0, reason: 'pluginsInconsistency: normal' }),
+        makeSignal({ detected: true, score: 0.4, reason: 'rtt: zero' }),
       ]
       const result = score(signals)
-      // normalizedScore will be < 1.0 due to undetected signals diluting, then +0.3 boost
+      // normalizedScore < 1.0 due to the lower-scoring signal, but confidence gets +0.3 boost
       expect(result.confidence).toBeGreaterThan(result.score)
     })
 

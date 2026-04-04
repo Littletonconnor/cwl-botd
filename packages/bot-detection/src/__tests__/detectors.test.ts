@@ -3,6 +3,7 @@ import { State } from '../types'
 import type { CollectorDict } from '../types'
 import { DetectorRegistry } from '../detectors/registry'
 import { score } from '../detectors/scoring'
+import { mockScreen, mockMimeTypes } from './helpers'
 import { BotKind } from '../detectors/types'
 import type { Detector, Signal } from '../detectors/types'
 import { automationDetectors } from '../detectors/automation'
@@ -428,6 +429,20 @@ describe('Full Pipeline Integration', () => {
   })
 
   it('passes normal browser fingerprint', () => {
+    Object.defineProperty(navigator, 'productSub', { value: '20030107', writable: true, configurable: true })
+    Object.defineProperty(navigator, 'appVersion', {
+      value: '5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36',
+      writable: true,
+      configurable: true,
+    })
+    mockScreen(1920, 1080)
+    mockMimeTypes(4)
+    Object.defineProperty(navigator, 'connection', {
+      value: { rtt: 50 },
+      writable: true,
+      configurable: true,
+    })
+
     const registry = new DetectorRegistry()
     registry.registerAll(automationDetectors)
 
