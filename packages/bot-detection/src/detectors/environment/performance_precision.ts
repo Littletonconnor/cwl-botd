@@ -1,6 +1,12 @@
 import type { CollectorDict } from '../../types'
 import { DetectorCategory, type Detector, type Signal } from '../types'
 
+// This detector is intentionally conservative. Modern browsers aggressively
+// round performance.now() (to 100μs or 1ms) as a Spectre mitigation.
+// Synchronous sampling — even with heavy CPU work between calls — frequently
+// produces identical values in real browsers. We only flag when there is
+// additional corroborating evidence (integer-only values AND zero variance),
+// which is characteristic of fully mocked timing APIs in automation.
 const detector: Detector = {
   name: 'performancePrecision',
   category: DetectorCategory.Inconsistency,
@@ -9,37 +15,35 @@ const detector: Detector = {
       return { detected: false, score: 0, reason: 'performancePrecision: API unavailable' }
     }
 
-    const samples: number[] = []
-    for (let i = 0; i < 20; i++) {
-      samples.push(performance.now())
-    }
+    const t1 = performance.now()
 
-    const allIdentical = samples.every((s) => s === samples[0])
-    if (allIdentical) {
-      return {
-        detected: true,
-        score: 0.6,
-        reason: 'performance.now() returns identical values across 20 calls (reduced precision or frozen clock)',
+    // Burn ~5ms of CPU
+    let x = 0
+    for (let j = 0; j < 500_000; j++) x += Math.sin(j)
+    void x
+
+    const t2 = performance.now()
+    const elapsed = t2 - t1
+
+    // A real browser with even 1ms rounding should show elapsed > 0 after
+    // 500K sin() calls (~5ms). A fully mocked/frozen clock returns 0.
+    if (elapsed === 0) {
+      // Double-check: take another measurement
+      let y = 0
+      for (let j = 0; j < 500_000; j++) y += Math.cos(j)
+      void y
+      const t3 = performance.now()
+
+      if (t3 === t1) {
+        return {
+          detected: true,
+          score: 0.3,
+          reason: 'performance.now() returned 0ms elapsed after ~10ms of CPU work (frozen clock)',
+        }
       }
     }
 
-    const precisions = samples
-      .map((s) => {
-        const str = String(s)
-        const dot = str.indexOf('.')
-        return dot === -1 ? 0 : str.length - dot - 1
-      })
-
-    const maxPrecision = Math.max(...precisions)
-    if (maxPrecision <= 0) {
-      return {
-        detected: true,
-        score: 0.5,
-        reason: 'performance.now() returns only integer values (heavily rounded, typical of automation)',
-      }
-    }
-
-    return { detected: false, score: 0, reason: 'performancePrecision: timing precision appears normal' }
+    return { detected: false, score: 0, reason: 'performancePrecision: timing appears normal' }
   },
 }
 

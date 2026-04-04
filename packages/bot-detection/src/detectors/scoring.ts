@@ -24,7 +24,7 @@ const DEFAULT_WEIGHTS: Record<string, number> = {
   evalEngineConsistency: 0.7,
   errorStackEngine: 0.8,
   nativeFunction: 0.7,
-  performancePrecision: 0.5,
+  performancePrecision: 0.3,
   clockSkew: 0.5,
   screenConsistency: 0.6,
   prototypeChain: 0.8,
