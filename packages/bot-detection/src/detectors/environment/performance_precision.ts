@@ -1,12 +1,15 @@
 import type { CollectorDict } from '../../types'
 import { DetectorCategory, type Detector, type Signal } from '../types'
 
-// This detector is intentionally conservative. Modern browsers aggressively
-// round performance.now() (to 100μs or 1ms) as a Spectre mitigation.
-// Synchronous sampling — even with heavy CPU work between calls — frequently
-// produces identical values in real browsers. We only flag when there is
-// additional corroborating evidence (integer-only values AND zero variance),
-// which is characteristic of fully mocked timing APIs in automation.
+const NUM_SAMPLES = 5
+const WORK_PER_SAMPLE = 500_000
+
+function cpuBurn(iterations: number): void {
+  let x = 0
+  for (let j = 0; j < iterations; j++) x += Math.sin(j)
+  void x
+}
+
 const detector: Detector = {
   name: 'performancePrecision',
   category: DetectorCategory.Inconsistency,
@@ -15,31 +18,32 @@ const detector: Detector = {
       return { detected: false, score: 0, reason: 'performancePrecision: API unavailable' }
     }
 
-    const t1 = performance.now()
+    const samples: number[] = [performance.now()]
+    for (let i = 0; i < NUM_SAMPLES; i++) {
+      cpuBurn(WORK_PER_SAMPLE)
+      samples.push(performance.now())
+    }
 
-    // Burn ~5ms of CPU
-    let x = 0
-    for (let j = 0; j < 500_000; j++) x += Math.sin(j)
-    void x
+    const allIdentical = samples.every((s) => s === samples[0])
+    if (allIdentical) {
+      return {
+        detected: true,
+        score: 0.6,
+        reason:
+          'performance.now() returned identical values across ' +
+          `${NUM_SAMPLES + 1} samples — frozen clock`,
+      }
+    }
 
-    const t2 = performance.now()
-    const elapsed = t2 - t1
-
-    // A real browser with even 1ms rounding should show elapsed > 0 after
-    // 500K sin() calls (~5ms). A fully mocked/frozen clock returns 0.
-    if (elapsed === 0) {
-      // Double-check: take another measurement
-      let y = 0
-      for (let j = 0; j < 500_000; j++) y += Math.cos(j)
-      void y
-      const t3 = performance.now()
-
-      if (t3 === t1) {
-        return {
-          detected: true,
-          score: 0.3,
-          reason: 'performance.now() returned 0ms elapsed after ~10ms of CPU work (frozen clock)',
-        }
+    const allInteger = samples.every((s) => Number.isInteger(s))
+    const totalElapsed = samples[samples.length - 1]! - samples[0]!
+    if (allInteger && totalElapsed <= NUM_SAMPLES) {
+      return {
+        detected: true,
+        score: 0.5,
+        reason:
+          'performance.now() returned only integer values with minimal elapsed time — ' +
+          'heavily rounded or mocked timer',
       }
     }
 
