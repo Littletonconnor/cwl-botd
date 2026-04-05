@@ -197,6 +197,17 @@ describe('Environment Detectors - Extended Coverage', () => {
       expect(signal.reason).toContain('integer values')
     })
 
+    it('passes with integer precision and realistic elapsed time (e.g. Firefox 1ms rounding)', () => {
+      let counter = 100
+      vi.spyOn(performance, 'now').mockImplementation(() => {
+        const value = counter
+        counter += 5
+        return value
+      })
+      const signal = performancePrecisionDetector.detect(makeCollectorDict())
+      expect(signal.detected).toBe(false)
+    })
+
     it('passes with normal decimal precision', () => {
       let counter = 0
       vi.spyOn(performance, 'now').mockImplementation(() => {
