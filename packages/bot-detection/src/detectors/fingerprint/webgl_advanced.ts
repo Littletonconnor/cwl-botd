@@ -3,11 +3,11 @@ import type { CollectorDict } from '../../types'
 import { BotKind, DetectorCategory, type Signal } from '../types'
 import type { Detector } from '../types'
 
-// SwiftShader is Chrome's built-in software renderer used as a fallback on
-// machines without GPU acceleration (Macs, remote desktops, some CI). It is
-// NOT a strong headless indicator on its own — real users hit it regularly.
-// Only flag clearly virtual/emulated GPUs.
+// Virtual or software-emulated GPU patterns that indicate headless or
+// automated environments. SwiftShader is Chrome's built-in software renderer —
+// the default in headless Chrome and a well-known automation signal.
 const VIRTUAL_GPU_PATTERNS = [
+  'SwiftShader',
   'llvmpipe',
   'Mesa OffScreen',
   'Software Rasterizer',
@@ -16,11 +16,6 @@ const VIRTUAL_GPU_PATTERNS = [
   'VMware',
   'Parallels',
   'QEMU',
-]
-
-// Lower-confidence patterns — software renderers that real browsers can use
-const SOFT_GPU_PATTERNS = [
-  'SwiftShader',
 ]
 
 const GPU_OS_EXPECTATIONS: Record<string, RegExp[]> = {
@@ -41,16 +36,10 @@ const detector: Detector = {
     const { unmaskedRenderer, unmaskedVendor, extensionCount } = component.value
     const anomalies: string[] = []
 
-    let isSoftGpu = false
     if (typeof unmaskedRenderer === 'string') {
       for (const pattern of VIRTUAL_GPU_PATTERNS) {
         if (unmaskedRenderer.includes(pattern)) {
           anomalies.push(`virtual GPU detected: "${pattern}"`)
-        }
-      }
-      for (const pattern of SOFT_GPU_PATTERNS) {
-        if (unmaskedRenderer.includes(pattern)) {
-          isSoftGpu = true
         }
       }
     }
@@ -81,16 +70,6 @@ const detector: Detector = {
         score: Math.min(0.5 + anomalies.length * 0.2, 1.0),
         reason: `WebGL advanced anomalies: ${anomalies.join('; ')}`,
         botKind: hasVirtualGpu ? BotKind.HeadlessChrome : undefined,
-      }
-    }
-
-    // Soft GPU (SwiftShader) alone is not enough to flag — only report as a
-    // weak signal without claiming a specific bot kind
-    if (isSoftGpu) {
-      return {
-        detected: false,
-        score: 0.15,
-        reason: 'WebGL: software renderer (SwiftShader) — common fallback, not flagged',
       }
     }
 
